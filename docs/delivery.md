@@ -11,7 +11,7 @@
 
 ## Validation and deployment
 
-The pull-request workflow runs formatting, linting, type checking, unit tests, a high-severity production dependency audit, the production build, responsive browser tests, and Axe accessibility checks. Browser screenshots, traces, and the HTML report are retained as workflow artifacts.
+The pull-request workflow runs formatting, linting, type checking, unit tests, a high-severity production dependency audit, the production build, responsive browser tests, and Axe accessibility checks. Browser screenshots, traces, and the HTML report are retained for 14 days on pull requests and 30 days for deployed revisions.
 
 A merge into `dev` authenticates to Google Cloud with a short-lived GitHub OIDC token. The identity provider accepts only this repository's `refs/heads/dev` subject; no service-account key is stored in GitHub.
 
@@ -25,7 +25,7 @@ The deployment workflow:
 6. checks the stable service URL.
 7. restores the previous revision if the post-promotion check fails.
 
-After the stable check passes, automation creates a temporary release branch from current `main`, merges the verified `dev` SHA into it, and opens the protected release pull request. This keeps the release head strictly up to date without merging release-only history back into `dev`. The required `Release verification` status is attached to the exact release-head SHA and links to its successful deployment run.
+After the stable check passes, the deploy workflow explicitly dispatches the main-sync workflow with the verified SHA and deployment URL. Sync automation creates a temporary release branch from current `main`, merges the verified `dev` SHA into it, and opens the protected release pull request. This keeps the release head strictly up to date without merging release-only history back into `dev`. The required `Release verification` status is attached to the exact release-head SHA and links to its successful deployment run.
 
 ## Recovery
 

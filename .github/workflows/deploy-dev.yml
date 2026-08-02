@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
   id-token: write
 
@@ -111,6 +112,15 @@ jobs:
             test-results/
           if-no-files-found: warn
           retention-days: 30
+      - name: Dispatch verified main sync
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run sync-main.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f verified_sha="$GITHUB_SHA" \
+            -f deployment_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
       - name: Roll back traffic after a failed promotion check
         if: ${{ failure() && steps.promote.outcome == 'success' && steps.previous.outputs.revision != '' }}
         run: |
@@ -130,4 +140,5 @@ jobs:
             echo "- Revision: \`${{ steps.candidate.outputs.revision }}\`"
             echo "- Candidate smoke: passed"
             echo "- Stable smoke: passed"
+            echo "- Main sync: dispatched"
           } >> "$GITHUB_STEP_SUMMARY"
