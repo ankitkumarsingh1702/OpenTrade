@@ -1,0 +1,34 @@
+# Copyright/SPDX header exclusions
+
+# Standard legal texts must remain unmodified.
+LICENSE
+DCO
+
+# Markdown and CFF files carry document-level notices or metadata instead of
+# source comments.
+**/*.md
+NOTICE
+CITATION.cff
+
+# Generated or machine-managed formats do not safely accept comments.
+package.json
+package-lock.json
+next-env.d.ts
+tsconfig.json
+.github/ISSUE_TEMPLATE/*.yml
+
+# Workflow/configuration YAML is reviewed by CI but excluded from the compact
+# first-party source-header set to avoid treating automation metadata as app
+# source.
+.github/workflows/*.yml
+.github/dependabot.yml
+.github/CODEOWNERS
+
+# Binary and passive visual assets retain asset-specific provenance.
+public/assets/**
+public/favicon.svg
+
+# Mirrored agent skills keep their own package validation and identical-copy
+# contract.
+.agents/skills/**
+.claude/skills/**

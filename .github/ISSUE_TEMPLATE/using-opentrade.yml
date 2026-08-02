@@ -1,0 +1,65 @@
+name: Using OpenTrade
+description: Voluntarily share a public OpenTrade-derived deployment or project.
+title: "[Showcase] "
+labels: [showcase]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Registration is voluntary unless a separate commercial agreement requires otherwise. Do not submit confidential or unnecessary personal information.
+  - type: input
+    id: name
+    attributes:
+      label: Organisation or individual
+      description: Public name only; a personal legal name is not required.
+  - type: input
+    id: product
+    attributes:
+      label: Product or project name
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Public URL
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: dropdown
+    id: usage
+    attributes:
+      label: Usage type
+      options:
+        - Unmodified deployment
+        - Modified open-source deployment
+        - Demonstration or research
+        - Commercially licensed deployment
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: modified
+    attributes:
+      label: Is the frontend modified?
+      options: ["No", "Yes"]
+    validations:
+      required: true
+  - type: input
+    id: attribution
+    attributes:
+      label: Attribution or corresponding-source location
+      description: Optional public URL.
+  - type: dropdown
+    id: feature
+    attributes:
+      label: May OpenTrade feature this deployment?
+      options: ["No", "Yes"]
+    validations:
+      required: true
+  - type: checkboxes
+    id: voluntary
+    attributes:
+      label: Confirmation
+      options:
+        - label: I understand this registration is voluntary and does not replace licence compliance.
+          required: true

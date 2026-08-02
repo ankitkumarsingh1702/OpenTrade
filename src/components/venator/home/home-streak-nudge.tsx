@@ -1,3 +1,8 @@
+/*
+ * Copyright © 2026 Ankit Kumar Singh
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import { operator } from "@/data/venator";
 import { getStreakPresentation } from "@/lib/streak";
 

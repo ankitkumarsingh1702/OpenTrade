@@ -1,3 +1,6 @@
+# Copyright © 2026 Ankit Kumar Singh
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 FROM node:22-alpine AS dependencies
 
 WORKDIR /app
@@ -24,6 +27,8 @@ RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/LICENSE /app/COPYRIGHT.md /app/NOTICE /app/ATTRIBUTION.md /app/TRADEMARKS.md /app/THIRD_PARTY_NOTICES.md ./legal/
+COPY --from=builder /app/third_party_licenses ./legal/third_party_licenses/
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 

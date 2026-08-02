@@ -1,3 +1,8 @@
+/*
+ * Copyright © 2026 Ankit Kumar Singh
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import { ArenaHero } from "@/components/venator/arena/arena-hero";
 import { LockedModes } from "@/components/venator/arena/locked-modes";
 import { HomePlayDrills } from "@/components/venator/home/home-play-drills";
