@@ -56,7 +56,7 @@ export function CommandCenter({ mobile = false }: { mobile?: boolean }) {
               {commandCenterResources.markets.map((market) => (
                 <a className="command-center__market-link clip-notch-br" href={market.href} key={market.label}>
                   <span aria-hidden="true" className="command-center__flag-frame">
-                    <Image alt="" height={18} src={market.flagSrc} unoptimized width={26} />
+                    <Image alt="" height={18} loading="eager" src={market.flagSrc} unoptimized width={26} />
                   </span>
                   <span>{market.label}</span>
                   <MaterialIcon name="arrow_forward" />

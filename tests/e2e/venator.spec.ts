@@ -170,8 +170,12 @@ test("Command Center resources keep the approved copy and destinations", async (
     await expect(india).toHaveAttribute("href", "https://www.opentrade.live/?market=india");
     await expect(us.locator("img")).toHaveAttribute("src", "/assets/flags/us.svg");
     await expect(india.locator("img")).toHaveAttribute("src", "/assets/flags/india.svg");
-    expect(await us.locator("img").evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-    expect(await india.locator("img").evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await expect
+      .poll(() => us.locator("img").evaluate((image) => (image as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(0);
+    await expect
+      .poll(() => india.locator("img").evaluate((image) => (image as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(0);
     await expect(commandCenter.getByRole("heading", { name: "Refer a friend", exact: true })).toBeVisible();
     await expect(discord).toHaveAttribute("href", "https://discord.gg/bt2YuTNcbK");
     await expect(discord).toHaveAttribute("target", "_blank");
