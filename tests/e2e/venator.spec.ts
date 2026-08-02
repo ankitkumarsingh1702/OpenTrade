@@ -23,8 +23,58 @@ test("dashboard enters the complete Arena flow", async ({ page }) => {
   await expect(higherLower).toHaveAttribute("aria-pressed", "true");
 });
 
-test("Home exposes the complete requested game journey", async ({ page }) => {
+test("Home exposes the complete requested game journey", async ({
+  page,
+}, testInfo) => {
   await page.goto("/");
+
+  const streakNudge = page.getByRole("region", { name: "Daily streak" });
+  const dailyDrills = page.getByRole("region", { name: "Daily Drills" });
+  await expect(streakNudge).toHaveCount(1);
+  await expect(streakNudge).toContainText("2-day streak");
+  await expect(streakNudge).toContainText(
+    "One Daily Drill keeps your momentum going.",
+  );
+  await expect(streakNudge).toContainText("5 days to 7-day target");
+  await expect(streakNudge.locator(".streak-nudge__day")).toHaveCount(7);
+  await expect(streakNudge.locator(".streak-nudge__day--complete")).toHaveCount(
+    2,
+  );
+  await expect(
+    streakNudge.getByRole("progressbar", {
+      name: "2 of 7 streak days complete",
+    }),
+  ).toHaveAttribute("aria-valuenow", "2");
+
+  const chooseDrill = streakNudge.getByRole("link", {
+    name: "Choose a Daily Drill",
+  });
+  await expect(chooseDrill).toHaveAttribute("href", "#daily-drills");
+  const nudgePrecedesDrills = await streakNudge.evaluate((nudge) => {
+    const drills = document.querySelector("#daily-drills");
+    return Boolean(drills && nudge.compareDocumentPosition(drills) & 4);
+  });
+  expect(nudgePrecedesDrills).toBe(true);
+  await chooseDrill.click();
+  await expect(page).toHaveURL(/\/#daily-drills$/);
+  await expect(dailyDrills).toBeFocused();
+
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("button", { name: "View command center" }).click();
+  }
+  const commandCenter =
+    testInfo.project.name === "mobile"
+      ? page.getByRole("dialog", { name: "Command center" })
+      : page.getByRole("complementary", {
+          name: "Command center sidebar",
+        });
+  await expect(commandCenter).toContainText("Daily Streaks");
+  await expect(commandCenter).toContainText("2d");
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("button", { name: "Close command center" }).click();
+  }
+  await expect(page.getByText(/T-shirt in/i)).toHaveCount(0);
+  await expect(page.getByText(/Duel a friend/i)).toHaveCount(0);
 
   const news = page.locator(".home-play-card--news");
   const tickerdle = page.locator(".home-play-card--tickerdle");
@@ -284,6 +334,9 @@ test("mobile shell exposes navigation and HUD without overflow", async ({
       document.documentElement.clientWidth,
   );
   expect(overflow).toBeLessThanOrEqual(0);
+  await expect(
+    page.getByRole("region", { name: "Daily streak" }),
+  ).toBeVisible();
   await page
     .getByRole("navigation", { name: "OpenTrade resources" })
     .scrollIntoViewIfNeeded();
