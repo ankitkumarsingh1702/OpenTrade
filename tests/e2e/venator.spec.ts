@@ -111,11 +111,40 @@ test("navigation, competition validation, and profile preferences work", async (
   await expect(page.getByRole("switch", { name: "Use dark appearance" })).not.toBeChecked();
 });
 
+test("brand palette renders Outer Space with contrast-safe Perfect White controls", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Desktop theme contract");
+  await page.goto("/");
+
+  const palette = await page.evaluate(() => {
+    const root = getComputedStyle(document.documentElement);
+    const primary = getComputedStyle(document.querySelector<HTMLElement>(".tactical-button--primary")!);
+    const activeNavigation = getComputedStyle(document.querySelector<HTMLElement>(".nav-link--active")!);
+
+    return {
+      accent: root.getPropertyValue("--accent").trim(),
+      accentSoft: root.getPropertyValue("--accent-soft").trim(),
+      primaryBackground: primary.backgroundColor,
+      primaryText: primary.color,
+      activeNavigationBackground: activeNavigation.backgroundColor,
+      activeNavigationText: activeNavigation.color,
+    };
+  });
+
+  expect(palette).toEqual({
+    accent: "#212850",
+    accentSoft: "#fff",
+    primaryBackground: "rgb(33, 40, 80)",
+    primaryText: "rgb(255, 255, 255)",
+    activeNavigationBackground: "rgb(33, 40, 80)",
+    activeNavigationText: "rgb(255, 255, 255)",
+  });
+});
+
 test("desktop pages have no serious accessibility violations", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop accessibility audit");
   for (const route of ["/", "/profile"]) {
     await page.goto(route);
-    const results = await new AxeBuilder({ page }).disableRules(["color-contrast"]).analyze();
+    const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   }
 });
