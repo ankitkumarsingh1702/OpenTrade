@@ -5,7 +5,7 @@
 - `main` is the protected, stable release history.
 - `dev` is the protected integration and deployment branch.
 - Work starts from current `dev` on a short-lived `feature/`, `fix/`, or `chore/` branch.
-- Internal pull requests into `dev` are squash-merged only after all required checks pass.
+- Internal pull requests into `dev` are squash-merged only after all required checks pass. The merge controller then dispatches the deployment workflow for the exact current `dev` head.
 - Dependency-bot pull requests run the same gates but stay open for explicit review.
 - Direct pushes, force pushes, and branch deletion are blocked on `main` and `dev`.
 
