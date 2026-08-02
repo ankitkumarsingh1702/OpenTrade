@@ -1,6 +1,6 @@
 # OpenTrade Venator task knowledge graph
 
-The Home visual cleanup starts from verified `origin/dev` commit `bd6b380` on the isolated `codex/home-cleanup` worktree. It is a Home-scoped frontend refinement with no persistence, completion API, or shared-shell change.
+The Command Center cleanup starts from verified `origin/dev` commit `0cb7308` on the isolated `codex/command-center-cleanup` worktree. It is a shared-shell frontend refinement with no persistence, API, or data-contract change. The already released Home cleanup remains unchanged.
 
 ```text
 Venator localhost experience
@@ -19,11 +19,13 @@ Venator localhost experience
 │   └── Command Center
 │       ├── shared structured operator streak snapshot and route-aware currency treatment
 │       │   └── the rail keeps its compact `2d` format while Home uses the same numeric source
-│       ├── bottom-anchored Market links for US and India
-│       │   └── deterministic local SVG flags in tactical frames (no emoji)
+│       ├── fixed compact header and operator identity above one internal scroll region
+│       ├── four 48 px passive stat rows with a compact Active Quests value badge
+│       ├── immediately following Market links for US and India
+│       │   └── deterministic local SVG flags without a nested decorative frame (no emoji)
 │       ├── Refer a friend label with canonical Discord community link
 │       ├── exact product-preview risk copy with canonical legal link
-│       └── shared desktop rail / scrollable mobile HUD implementation
+│       └── shared 288 px desktop rail / 344 px maximum scrollable mobile HUD implementation
 ├── Dashboard (/)
 │   ├── Global Trading Arena hero
 │   │   └── compact static grayscale media, flat frame, and unchanged `/arena` action
@@ -64,7 +66,7 @@ Venator localhost experience
 ├── Verification
 │   ├── TypeScript and ESLint
 │   ├── Vitest fixture, URL-safety, validation, and exact theme-token tests
-│   ├── Playwright route, exact-link, computed theme, mobile overflow, and axe checks
+│   ├── Playwright route, exact-link, compact rail geometry, keyboard focus, mobile overflow, and axe checks
 │   └── 1280x720/1024 desktop plus 390x844 and 320px mobile screenshot review
 └── Production delivery
     ├── existing Cloud Run service: opentrade / us-central1
