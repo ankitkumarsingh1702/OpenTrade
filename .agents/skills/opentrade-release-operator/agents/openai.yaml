@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenTrade Release Operator"
+  short_description: "Ship OpenTrade safely from PR to Cloud Run"
+  default_prompt: "Use $opentrade-release-operator to validate, publish, deploy, and verify this OpenTrade change."
