@@ -5,13 +5,14 @@
 
 "use client";
 
-import { FormEvent, useId, useState } from "react";
+import { FormEvent, useId, useRef, useState } from "react";
 
 import { isValidEmail } from "@/lib/validation";
 
 export function CampusInterestForm() {
   const inputId = useId();
   const messageId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState("");
   const [valid, setValid] = useState<boolean | null>(null);
 
@@ -23,6 +24,7 @@ export function CampusInterestForm() {
     if (!isValidEmail(email)) {
       setValid(false);
       setMessage("Enter a valid student email address.");
+      inputRef.current?.focus();
       return;
     }
 
@@ -51,6 +53,7 @@ export function CampusInterestForm() {
           id={inputId}
           name="studentEmail"
           placeholder="Student email"
+          ref={inputRef}
           type="email"
         />
         <button
