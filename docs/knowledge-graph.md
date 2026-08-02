@@ -1,6 +1,6 @@
 # OpenTrade Venator task knowledge graph
 
-The original implementation started from an unborn `main` branch. The identity-infusion fix starts from the latest verified `origin/dev` commit `22050b3` on the isolated `codex/logo-infusion` branch.
+The Home streak nudge starts from the latest verified `origin/dev` commit `98fe9d6` on the isolated `codex/home-streak-nudge` worktree. It is an additive frontend-preview feature with no persistence or completion API.
 
 ```text
 Venator localhost experience
@@ -17,7 +17,8 @@ Venator localhost experience
 │   │   ├── white presentation filter on the continuous pure-black navigation rail
 │   │   └── no checkerboard, image tile, external runtime request, or competing icon file
 │   └── Command Center
-│       ├── unchanged operator snapshot and route-aware currency treatment
+│       ├── shared structured operator streak snapshot and route-aware currency treatment
+│       │   └── the rail keeps its compact `2d` format while Home uses the same numeric source
 │       ├── bottom-anchored Market links for US and India
 │       │   └── deterministic local SVG flags in tactical frames (no emoji)
 │       ├── Refer a friend label with canonical Discord community link
@@ -25,6 +26,12 @@ Venator localhost experience
 │       └── shared desktop rail / scrollable mobile HUD implementation
 ├── Dashboard (/)
 │   ├── Global Trading Arena hero
+│   ├── Daily streak nudge
+│   │   ├── server-rendered from the shared operator snapshot
+│   │   ├── truthful 2-of-7 milestone progress without date or completion claims
+│   │   ├── same-page `Choose a Daily Drill` fragment action
+│   │   ├── seven compact non-interactive markers with semantic progressbar output
+│   │   └── no merchandise, duel, reward entitlement, timer, analytics, or local persistence
 │   ├── Daily Drills
 │   │   ├── two unchanged progression drills
 │   │   ├── News → exact OpenTrade India game URL
@@ -51,7 +58,8 @@ Venator localhost experience
 │   ├── low-gain synthesized click audio created only after user activation
 │   ├── bounded Perfect White click burst with keyboard-position fallback
 │   ├── navigation and dialogs remain functional when audio is blocked
-│   └── reduced-motion mode suppresses entrance, scan, and burst movement
+│   ├── the streak CTA inherits the existing launch sound and bounded click burst
+│   └── reduced-motion mode suppresses entrance, pulse, scan, and burst movement
 ├── Verification
 │   ├── TypeScript and ESLint
 │   ├── Vitest fixture, URL-safety, validation, and exact theme-token tests
@@ -64,4 +72,4 @@ Venator localhost experience
     └── traffic-only rollback to the previously healthy revision
 ```
 
-No backend, authentication, trading engine, persistence service, payments, market data, email/SMS delivery, migrations, or external mutation is introduced by this feature. The supplied HTTPS destinations are ordinary same-tab user-initiated navigation. Audio is synthesized locally with Web Audio and has no network dependency. The canonical black SVG remains unmodified at rest; only its in-app presentation is inverted to Perfect White so the exact geometry remains legible on the requested black rail. Production delivery uses the repository's existing frontend-only Cloud Run lane and requires no data migration.
+No backend, authentication, trading engine, persistence service, payments, market data, email/SMS delivery, migrations, or external mutation is introduced by this feature. The streak remains a truthful static operator snapshot; clicking the nudge does not increment or secure it. The supplied HTTPS destinations are ordinary same-tab user-initiated navigation, while the nudge uses a same-page fragment. Audio is synthesized locally with Web Audio and has no network dependency. Production delivery uses the repository's existing frontend-only Cloud Run lane and requires no data migration.
