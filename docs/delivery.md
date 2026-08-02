@@ -6,6 +6,7 @@
 - `dev` is the protected integration and deployment branch.
 - Work starts from current `dev` on a short-lived `feature/`, `fix/`, or `chore/` branch.
 - Internal pull requests into `dev` are squash-merged only after all required checks pass.
+- Dependency-bot pull requests run the same gates but stay open for explicit review.
 - Direct pushes, force pushes, and branch deletion are blocked on `main` and `dev`.
 
 ## Validation and deployment
