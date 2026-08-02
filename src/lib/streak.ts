@@ -1,3 +1,8 @@
+/*
+ * Copyright © 2026 Ankit Kumar Singh
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import type { StreakSnapshot } from "@/types/venator";
 
 const DEFAULT_TARGET_DAYS = 7;

@@ -1,8 +1,28 @@
 {
   "name": "opentrade-venator",
   "version": "1.0.0",
+  "description": "The official OpenTrade Venator tactical trading simulator frontend.",
   "private": true,
   "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "author": {
+    "name": "Ankit Kumar Singh",
+    "url": "https://github.com/ankitkumarsingh1702"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankitkumarsingh1702/OpenTrade.git"
+  },
+  "homepage": "https://github.com/ankitkumarsingh1702/OpenTrade#readme",
+  "bugs": {
+    "url": "https://github.com/ankitkumarsingh1702/OpenTrade/issues"
+  },
+  "keywords": [
+    "opentrade",
+    "frontend",
+    "trading-simulator",
+    "nextjs"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,7 +34,12 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "security": "npm audit --audit-level=high --omit=dev",
-    "smoke": "node .github/scripts/smoke.mjs"
+    "smoke": "node .github/scripts/smoke.mjs",
+    "legal:check": "node scripts/check-legal-compliance.mjs",
+    "dco:check": "node scripts/check-dco.mjs",
+    "provenance:generate": "node scripts/generate-build-info.mjs",
+    "provenance:check": "node scripts/generate-build-info.mjs --check",
+    "sbom": "npm sbom --sbom-format spdx"
   },
   "dependencies": {
     "@fontsource-variable/anybody": "5.3.0",
