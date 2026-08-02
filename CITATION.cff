@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: >-
+  If you use OpenTrade in a product, demonstration, article, research project,
+  or public deployment, please cite the official project using this metadata.
+type: software
+title: OpenTrade Venator
+authors:
+  - family-names: Singh
+    given-names: Ankit Kumar
+version: 1.0.0
+date-released: 2026-08-02
+repository-code: https://github.com/ankitkumarsingh1702/OpenTrade
+url: https://opentrade-646258530541.us-central1.run.app
+license: AGPL-3.0-or-later
+abstract: >-
+  A responsive frontend demonstration of the OpenTrade Venator tactical
+  trading simulator interface.
+keywords:
+  - OpenTrade
+  - frontend
+  - trading simulator
+  - Next.js

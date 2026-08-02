@@ -1,3 +1,8 @@
+/*
+ * Copyright © 2026 Ankit Kumar Singh
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import { fileURLToPath } from "node:url";
 
 import { defineConfig } from "vitest/config";

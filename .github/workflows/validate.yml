@@ -16,6 +16,17 @@ env:
   CI: "true"
 
 jobs:
+  dco:
+    name: DCO
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - run: node scripts/check-dco.mjs "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+
   quality:
     name: Code quality
     runs-on: ubuntu-latest
@@ -27,6 +38,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run legal:check
+      - name: Validate citation metadata
+        uses: citation-file-format/cffconvert-github-action@4cf11baa70a673bfdf9dad0acc7ee33b3f4b6084 # 2.0.0
+        with:
+          args: --validate
       - run: npm run format:check
       - run: npm run lint
       - run: npm run typecheck
@@ -56,6 +72,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run provenance:generate -- --sha "$GITHUB_SHA"
+      - run: npm run provenance:check -- --sha "$GITHUB_SHA"
       - run: npm run build
 
   browser:
