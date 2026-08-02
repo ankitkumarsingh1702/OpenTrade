@@ -37,4 +37,19 @@ describe("OpenTrade brand palette", () => {
       /\.page--home\s+\.home-play-card\s*{[\s\S]*?--game-accent:\s*var\(--accent\)/i,
     );
   });
+
+  it("keeps the Command Center flat and free of decorative HUD effects", () => {
+    expect(themeCss).not.toMatch(
+      /\.operator-stats__row--active\s*\{[^}]*background(?:-color)?:\s*var\(--accent\)/i,
+    );
+    expect(themeCss).not.toMatch(
+      /\.command-center__utilities\s*\{[^}]*margin-top:\s*auto/i,
+    );
+    expect(themeCss).not.toMatch(
+      /\.command-center__flag-frame\s*\{[^}]*(?:box-shadow|transform|border:)/i,
+    );
+    expect(themeCss).not.toMatch(
+      /\.command-center__market-link:(?:hover|focus-visible)\s+\.command-center__flag-frame/i,
+    );
+  });
 });
