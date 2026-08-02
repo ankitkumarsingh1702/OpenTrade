@@ -10,7 +10,10 @@ export const operator: OperatorSnapshot = {
   handle: "Operator_01",
   level: 42,
   xp: 300,
-  streak: "2d",
+  streak: {
+    currentDays: 2,
+    targetDays: 7,
+  },
   coins: 100,
   quests: 2,
 };

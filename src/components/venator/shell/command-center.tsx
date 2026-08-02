@@ -35,7 +35,7 @@ export function CommandCenter({ mobile = false }: { mobile?: boolean }) {
           </div>
           <div className="operator-stats__row">
             <dt>Daily Streaks</dt>
-            <dd>{operator.streak}</dd>
+            <dd>{operator.streak.currentDays}d</dd>
           </div>
           <div className="operator-stats__row">
             <dt>G-Coins</dt>

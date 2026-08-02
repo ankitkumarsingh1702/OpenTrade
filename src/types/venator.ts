@@ -6,10 +6,12 @@ export type MaterialIconName =
   | "bolt"
   | "calendar_today"
   | "campaign"
+  | "check"
   | "flight_takeoff"
   | "group"
   | "info"
   | "lock"
+  | "local_fire_department"
   | "login"
   | "logout"
   | "close"
@@ -64,7 +66,12 @@ export interface OperatorSnapshot {
   handle: string;
   level: number;
   xp: number;
-  streak: string;
+  streak: StreakSnapshot;
   coins: number;
   quests: number;
+}
+
+export interface StreakSnapshot {
+  currentDays: number;
+  targetDays: number;
 }
