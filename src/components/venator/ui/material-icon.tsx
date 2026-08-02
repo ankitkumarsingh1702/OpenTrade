@@ -6,7 +6,11 @@ interface MaterialIconProps {
   className?: string;
 }
 
-export function MaterialIcon({ name, filled = false, className = "" }: MaterialIconProps) {
+export function MaterialIcon({
+  name,
+  filled = false,
+  className = "",
+}: MaterialIconProps) {
   return (
     <span
       aria-hidden="true"

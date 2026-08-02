@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-const themeCss = readFileSync(new URL("../../src/app/globals.css", import.meta.url), "utf8");
+const themeCss = readFileSync(
+  new URL("../../src/app/globals.css", import.meta.url),
+  "utf8",
+);
 
 describe("OpenTrade brand palette", () => {
   it("keeps the approved Outer Space and Perfect White tokens exact", () => {
@@ -14,6 +17,8 @@ describe("OpenTrade brand palette", () => {
   });
 
   it("does not reintroduce the retired pink theme values", () => {
-    expect(themeCss).not.toMatch(/#ea4c89|#ffb1c6|rgba\(\s*234\s*,\s*76\s*,\s*137/i);
+    expect(themeCss).not.toMatch(
+      /#ea4c89|#ffb1c6|rgba\(\s*234\s*,\s*76\s*,\s*137/i,
+    );
   });
 });

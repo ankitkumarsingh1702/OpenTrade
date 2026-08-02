@@ -15,7 +15,10 @@ export function ArenaHero({ expanded = false }: { expanded?: boolean }) {
           <br />
           <span>Arena</span>
         </h1>
-        <Link className="tactical-button tactical-button--primary arena-hero__cta" href={expanded ? "#drill-selector" : "/arena"}>
+        <Link
+          className="tactical-button tactical-button--primary arena-hero__cta"
+          href={expanded ? "#drill-selector" : "/arena"}
+        >
           Enter Arena
           <MaterialIcon name="arrow_forward" />
         </Link>

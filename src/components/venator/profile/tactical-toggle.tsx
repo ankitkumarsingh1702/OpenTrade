@@ -6,9 +6,17 @@ interface TacticalToggleProps {
   compact?: boolean;
 }
 
-export function TacticalToggle({ checked, disabled = false, label, onChange, compact = false }: TacticalToggleProps) {
+export function TacticalToggle({
+  checked,
+  disabled = false,
+  label,
+  onChange,
+  compact = false,
+}: TacticalToggleProps) {
   return (
-    <label className={`tactical-toggle${compact ? " tactical-toggle--compact" : ""}`}>
+    <label
+      className={`tactical-toggle${compact ? " tactical-toggle--compact" : ""}`}
+    >
       <span className="sr-only">{label}</span>
       <input
         checked={checked}

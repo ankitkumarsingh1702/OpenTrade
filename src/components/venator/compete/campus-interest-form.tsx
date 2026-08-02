@@ -26,7 +26,10 @@ export function CampusInterestForm() {
   }
 
   return (
-    <section className="campus-panel clip-notch-tr" aria-labelledby="campus-heading">
+    <section
+      className="campus-panel clip-notch-tr"
+      aria-labelledby="campus-heading"
+    >
       <h2 id="campus-heading">
         <span aria-hidden="true" className="material-symbols-outlined">
           campaign
@@ -45,12 +48,19 @@ export function CampusInterestForm() {
           placeholder="Student email"
           type="email"
         />
-        <button className="tactical-button tactical-button--primary" type="submit">
+        <button
+          className="tactical-button tactical-button--primary"
+          type="submit"
+        >
           Update
         </button>
       </form>
       {message ? (
-        <p className={`form-message${valid ? " form-message--success" : " form-message--error"}`} id={messageId} role="status">
+        <p
+          className={`form-message${valid ? " form-message--success" : " form-message--error"}`}
+          id={messageId}
+          role="status"
+        >
           {message}
         </p>
       ) : null}

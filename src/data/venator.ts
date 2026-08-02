@@ -1,4 +1,10 @@
-import type { CampusRanking, Drill, ExternalGame, HomeResource, OperatorSnapshot } from "@/types/venator";
+import type {
+  CampusRanking,
+  Drill,
+  ExternalGame,
+  HomeResource,
+  OperatorSnapshot,
+} from "@/types/venator";
 
 export const operator: OperatorSnapshot = {
   handle: "Operator_01",
@@ -11,8 +17,16 @@ export const operator: OperatorSnapshot = {
 
 export const commandCenterResources = {
   markets: [
-    { label: "US", flagSrc: "/assets/flags/us.svg", href: "https://www.opentrade.live/?market=us" },
-    { label: "India", flagSrc: "/assets/flags/india.svg", href: "https://www.opentrade.live/?market=india" },
+    {
+      label: "US",
+      flagSrc: "/assets/flags/us.svg",
+      href: "https://www.opentrade.live/?market=us",
+    },
+    {
+      label: "India",
+      flagSrc: "/assets/flags/india.svg",
+      href: "https://www.opentrade.live/?market=india",
+    },
   ],
   discord: {
     label: "Join Discord",
@@ -98,15 +112,29 @@ export const drills: Drill[] = [
 ];
 
 export const rankings: CampusRanking[] = [
-  { rank: "01", name: "Indian Institute of Technology Madras", interest: "3 interested", score: 30 },
-  { rank: "02", name: "Indian Institute of Technology Delhi", interest: "2 interested", score: 20 },
+  {
+    rank: "01",
+    name: "Indian Institute of Technology Madras",
+    interest: "3 interested",
+    score: 30,
+  },
+  {
+    rank: "02",
+    name: "Indian Institute of Technology Delhi",
+    interest: "2 interested",
+    score: 20,
+  },
   { rank: "03", name: "dau.ac.in", interest: "1 interested" },
   { rank: "04", name: "Hindu College", interest: "1 interested" },
   { rank: "05", name: "pec.edu.in", interest: "1 interested" },
   { rank: "06", name: "slur.edu", interest: "1 interested" },
   { rank: "07", name: "srcc.edu", interest: "1 interested" },
   { rank: "08", name: "student.unimelb.edu.au", interest: "1 interested" },
-  { rank: "09", name: "University of New South Wales", interest: "1 interested" },
+  {
+    rank: "09",
+    name: "University of New South Wales",
+    interest: "1 interested",
+  },
 ];
 
 export const milestones = [

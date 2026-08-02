@@ -44,7 +44,10 @@ export function ProfileContent() {
         </h2>
         <div className="milestone-grid">
           {milestones.map((milestone) => (
-            <article className="milestone-card clip-notch-tr" key={milestone.name}>
+            <article
+              className="milestone-card clip-notch-tr"
+              key={milestone.name}
+            >
               <MaterialIcon name="lock" />
               <h3>{milestone.name}</h3>
               <p>Unlocks at Level {milestone.level}</p>
