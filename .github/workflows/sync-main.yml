@@ -1,9 +1,16 @@
 name: Sync verified dev to main
 
 on:
-  workflow_run:
-    workflows: [Deploy dev]
-    types: [completed]
+  workflow_dispatch:
+    inputs:
+      verified_sha:
+        description: Successfully deployed dev commit
+        required: true
+        type: string
+      deployment_url:
+        description: Successful deployment workflow URL
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -12,8 +19,10 @@ permissions:
 
 jobs:
   propose:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    env:
+      DEPLOYMENT_URL: ${{ inputs.deployment_url }}
+      VERIFIED_SHA: ${{ inputs.verified_sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -22,7 +31,6 @@ jobs:
         id: release
         env:
           GH_TOKEN: ${{ github.token }}
-          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           git fetch origin main dev
           if git merge-base --is-ancestor "$VERIFIED_SHA" origin/main; then
@@ -46,6 +54,7 @@ jobs:
       - name: Record exact release verification status
         if: ${{ steps.release.outputs.needed == 'true' }}
         env:
+          DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
           GH_TOKEN: ${{ github.token }}
           RELEASE_SHA: ${{ steps.release.outputs.sha }}
         run: |
@@ -53,13 +62,12 @@ jobs:
             -f state=success \
             -f context='Release verification' \
             -f description='Candidate and stable Cloud Run smoke passed' \
-            -f target_url="${{ github.event.workflow_run.html_url }}"
+            -f target_url="$DEPLOYMENT_URL"
       - name: Create and queue the protected main pull request
         if: ${{ steps.release.outputs.needed == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_BRANCH: ${{ steps.release.outputs.branch }}
-          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           pr_url="$(gh pr create \
             --repo "$GITHUB_REPOSITORY" \
