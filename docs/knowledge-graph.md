@@ -1,6 +1,6 @@
 # OpenTrade Venator task knowledge graph
 
-The Command Center cleanup starts from verified `origin/dev` commit `0cb7308` on the isolated `codex/command-center-cleanup` worktree. It is a shared-shell frontend refinement with no persistence, API, or data-contract change. The already released Home cleanup remains unchanged.
+The Compete and Profile cleanup starts from verified `origin/dev` commit `117ddb7` on the isolated `codex/compete-profile-cleanup` worktree. It is a route-scoped frontend refinement with no API, database, authentication, or data-contract change. The already released Home and Command Center cleanups remain unchanged.
 
 ```text
 Venator localhost experience
@@ -48,14 +48,22 @@ Venator localhost experience
 │   ├── add-game local status
 │   └── two locked modes
 ├── Compete (/compete)
-│   ├── static event brief
+│   ├── compact static event brief
+│   │   ├── exact host, title, summary and three-fact contract
+│   │   └── two honest local-preview ActionButton dialogs
 │   ├── local-only campus email validation
-│   └── static campus rankings
+│   │   ├── no API, persistence or student-domain enforcement
+│   │   └── invalid submissions return keyboard focus to the email input
+│   └── flat static campus rankings
+│       ├── exact nine-row order and interest counts
+│       └── score-backed top-two rows use only a quiet 2 px progress line
 ├── Profile (/profile)
 │   ├── static account snapshot
-│   ├── local appearance and reminder preferences
-│   ├── rewards and milestones
-│   └── local-only external action notices
+│   ├── locally persisted appearance, sound and reminder preferences
+│   │   ├── 44 px switch hit areas with compact 48 × 24 px tracks
+│   │   └── disabled text reminder remains non-interactive
+│   ├── flat rewards status and compact two-column locked milestones
+│   └── local-only gear and sign-out ActionButton notices
 ├── Interaction feedback
 │   ├── one delegated client-side handler for opted-in actions
 │   ├── low-gain synthesized click audio created only after user activation
@@ -66,8 +74,9 @@ Venator localhost experience
 ├── Verification
 │   ├── TypeScript and ESLint
 │   ├── Vitest fixture, URL-safety, validation, and exact theme-token tests
-│   ├── Playwright route, exact-link, compact rail geometry, keyboard focus, mobile overflow, and axe checks
-│   └── 1280x720/1024 desktop plus 390x844 and 320px mobile screenshot review
+│   ├── Playwright route, dialog, form-focus, preference-persistence, compact geometry, mobile overflow, and axe checks
+│   ├── static theme guards reject Compete/Profile gradients, glow, thick rails and filled passive pills
+│   └── 1280x720/1024 desktop plus 390x844 and 320x568 mobile screenshot review
 └── Production delivery
     ├── existing Cloud Run service: opentrade / us-central1
     ├── candidate revision smoke before traffic promotion

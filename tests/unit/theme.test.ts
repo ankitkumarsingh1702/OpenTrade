@@ -52,4 +52,34 @@ describe("OpenTrade brand palette", () => {
       /\.command-center__market-link:(?:hover|focus-visible)\s+\.command-center__flag-frame/i,
     );
   });
+
+  it("keeps Compete and Profile in the restrained tactical system", () => {
+    expect(themeCss).toMatch(
+      /\.page--compete\s+\.competition-brief[\s\S]*?border:\s*1px solid var\(--border-strong\);[\s\S]*?box-shadow:\s*none;/i,
+    );
+    expect(themeCss).toMatch(
+      /\.page--compete\s+\.ranking-row--top\s+\.ranking-row__interest\s*\{[\s\S]*?background:\s*transparent;[\s\S]*?border:\s*0;/i,
+    );
+    expect(themeCss).toMatch(
+      /\.page--profile::before\s*\{\s*content:\s*none;/i,
+    );
+    expect(themeCss).toMatch(
+      /\.page--profile\s+\.hud-panel\s*\{[\s\S]*?background:\s*var\(--surface-card\);[\s\S]*?box-shadow:\s*none;/i,
+    );
+    expect(themeCss).toMatch(
+      /\.page--profile\s+\.hud-panel::after\s*\{\s*content:\s*none;/i,
+    );
+    expect(themeCss).toMatch(
+      /\.page--profile\s+\.milestone-card:hover\s*\{[\s\S]*?box-shadow:\s*none;[\s\S]*?transform:\s*none;/i,
+    );
+    expect(themeCss).not.toMatch(
+      /\.page--profile::before\s*\{[^}]*radial-gradient/i,
+    );
+    expect(themeCss).not.toMatch(
+      /\.page--profile\s+\.hud-panel\s*\{[^}]*linear-gradient/i,
+    );
+    expect(themeCss).not.toMatch(
+      /\.page--(?:compete|profile)[^{]*\{[^}]*(?:text-shadow:\s*0|box-shadow:\s*(?:0|inset|4px)|border-left:\s*4px)/i,
+    );
+  });
 });
