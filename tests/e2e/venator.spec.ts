@@ -544,8 +544,11 @@ test("mobile shell exposes navigation and HUD without overflow", async ({
   await expect(page.getByRole("dialog", { name: "Navigation" })).toBeVisible();
   await page.getByRole("button", { name: "Close navigation" }).click();
 
-  await page.getByRole("button", { name: "View command center" }).click();
+  const hudTrigger = page.getByRole("button", { name: "View command center" });
+  await hudTrigger.click();
   const hud = page.getByRole("dialog", { name: "Command center" });
+  const closeHud = page.getByRole("button", { name: "Close command center" });
+  await expect(closeHud).toBeFocused();
   await expect(hud).toContainText("Operator_01");
   await hud
     .getByRole("link", { name: /Legal disclosures/ })
@@ -558,7 +561,14 @@ test("mobile shell exposes navigation and HUD without overflow", async ({
     .include(".mobile-drawer--hud")
     .analyze();
   expect(hudAccessibility.violations).toEqual([]);
-  await page.getByRole("button", { name: "Close command center" }).click();
+  await page.keyboard.press("Escape");
+  await expect(hud).not.toBeVisible();
+  await expect(hudTrigger).toBeFocused();
+
+  await hudTrigger.click();
+  await closeHud.click();
+  await expect(hud).not.toBeVisible();
+  await expect(hudTrigger).toBeFocused();
 
   const overflow = await page.evaluate(
     () =>
@@ -665,6 +675,24 @@ test("Command Center resources keep the approved copy and destinations", async (
     await expect(legal).toHaveAttribute("target", "_blank");
     await expect(legal).toHaveAttribute("rel", /noopener noreferrer/);
 
+    const stats = commandCenter.locator(".operator-stats");
+    await expect(stats).toContainText("XP Status");
+    await expect(stats).toContainText("300");
+    await expect(stats).toContainText("Daily Streaks");
+    await expect(stats).toContainText("2d");
+    await expect(stats).toContainText("G-Coins");
+    await expect(stats).toContainText("100");
+    await expect(stats).toContainText("Active Quests");
+    await expect(stats).toContainText("2");
+
+    const currency = commandCenter.locator(".operator-stats__currency");
+    if (route === "/profile") {
+      await expect(currency).toHaveCount(1);
+      await expect(currency).toHaveCSS("color", "rgb(234, 179, 8)");
+    } else {
+      await expect(currency).toHaveCount(0);
+    }
+
     const horizontalOverflow = await commandCenter.evaluate(
       (element) => element.scrollWidth - element.clientWidth,
     );
@@ -674,6 +702,96 @@ test("Command Center resources keep the approved copy and destinations", async (
       await page.getByRole("button", { name: "Close command center" }).click();
     }
   }
+});
+
+test("desktop Command Center uses restrained compact geometry", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Desktop-only rail geometry");
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/");
+
+  const commandCenter = page.getByRole("complementary", {
+    name: "Command center sidebar",
+  });
+  const header = commandCenter.locator(".command-center__header");
+  const operatorCard = commandCenter.locator(".operator-card");
+  const stats = commandCenter.locator(".operator-stats");
+  const statRows = stats.locator(".operator-stats__row");
+  const utilities = commandCenter.locator(".command-center__utilities");
+  const us = commandCenter.getByRole("link", { name: "US", exact: true });
+  const discord = commandCenter.getByRole("link", { name: /Join Discord/ });
+
+  await expect(commandCenter).toHaveCSS("width", "288px");
+  await expect(header).toHaveCSS("height", "68px");
+  await expect(operatorCard).toHaveCSS("height", "72px");
+  await expect(statRows).toHaveCount(4);
+
+  const rowHeights = await statRows.evaluateAll((rows) =>
+    rows.map((row) => row.getBoundingClientRect().height),
+  );
+  expect(rowHeights).toEqual([48, 48, 48, 48]);
+  await expect(stats.locator(".operator-stats__row--active")).not.toHaveCSS(
+    "background-color",
+    "rgb(33, 40, 80)",
+  );
+
+  const flowGap = await Promise.all([
+    stats.boundingBox(),
+    utilities.boundingBox(),
+  ]);
+  expect(flowGap[0]).not.toBeNull();
+  expect(flowGap[1]).not.toBeNull();
+  expect(
+    Math.abs(flowGap[1]!.y - (flowGap[0]!.y + flowGap[0]!.height)),
+  ).toBeLessThanOrEqual(1);
+
+  for (const target of [us, discord]) {
+    const box = await target.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+  }
+
+  const flagFrame = us.locator(".command-center__flag-frame");
+  await expect(flagFrame).toHaveCSS("box-shadow", "none");
+  await expect(flagFrame).toHaveCSS("transform", "none");
+
+  const legal = commandCenter.getByRole("link", { name: /Legal disclosures/ });
+  await legal.scrollIntoViewIfNeeded();
+  await expect(legal).toBeVisible();
+  const bodyScroll = await commandCenter
+    .locator(".command-center__body")
+    .evaluate((element) => ({
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+      scrollTop: element.scrollTop,
+    }));
+  expect(bodyScroll.scrollHeight).toBeGreaterThanOrEqual(
+    bodyScroll.clientHeight,
+  );
+  expect(bodyScroll.scrollTop).toBeGreaterThanOrEqual(0);
+});
+
+test("compact mobile Command Center remains reachable at 320px", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "Mobile-only compact HUD");
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "View command center" }).click();
+
+  const hud = page.getByRole("dialog", { name: "Command center" });
+  const box = await hud.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.width).toBeLessThanOrEqual(304);
+
+  const legal = hud.getByRole("link", { name: /Legal disclosures/ });
+  await legal.scrollIntoViewIfNeeded();
+  await expect(legal).toBeVisible();
+  const overflow = await hud.evaluate(
+    (element) => element.scrollWidth - element.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 });
 
 test("arena feedback is user-triggered, bounded, and reduced-motion safe", async ({
