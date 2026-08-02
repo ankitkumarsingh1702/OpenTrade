@@ -45,6 +45,15 @@ test("Home exposes the complete requested game journey", async ({
   await expect(streakNudge.locator(".streak-nudge__day--complete")).toHaveCount(
     2,
   );
+  await expect(streakNudge.locator(".streak-nudge__day--latest")).toHaveCount(
+    1,
+  );
+  await expect(streakNudge.locator(".streak-nudge__day--latest")).toContainText(
+    "check",
+  );
+  await expect(
+    streakNudge.locator(".streak-nudge__day--complete").first(),
+  ).toContainText("1");
   await expect(
     streakNudge.getByRole("progressbar", {
       name: "2 of 7 streak days complete",
@@ -52,7 +61,7 @@ test("Home exposes the complete requested game journey", async ({
   ).toHaveAttribute("aria-valuenow", "2");
 
   const chooseDrill = streakNudge.getByRole("link", {
-    name: "Choose a Daily Drill",
+    name: "Play today. 5 days to 7-day target.",
   });
   await expect(chooseDrill).toHaveAttribute("href", "#daily-drills");
   const nudgePrecedesDrills = await streakNudge.evaluate((nudge) => {
@@ -137,6 +146,158 @@ test("Home exposes the complete requested game journey", async ({
   await expect(dialog).toContainText("Product preview");
   await expect(dialog).toContainText(
     "Game submissions are not available in this product preview yet.",
+  );
+});
+
+test("Home visual hierarchy stays compact and unified", async ({
+  page,
+}, testInfo) => {
+  const isMobile = testInfo.project.name === "mobile";
+  await page.setViewportSize(
+    isMobile ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+  );
+  await page.goto("/");
+
+  const metrics = await page.evaluate(() => {
+    const box = (selector: string) => {
+      const bounds = document
+        .querySelector<HTMLElement>(selector)!
+        .getBoundingClientRect();
+      return {
+        bottom: bounds.bottom,
+        height: bounds.height,
+        top: bounds.top,
+        width: bounds.width,
+      };
+    };
+    const cards = [
+      ...document.querySelectorAll<HTMLElement>(
+        ".page--home .drill-grid--progress .drill-card, .page--home .home-play-card",
+      ),
+    ].map((card) => {
+      const style = getComputedStyle(card);
+      return {
+        background: style.backgroundColor,
+        borderBottom: style.borderBottomWidth,
+        borderLeft: style.borderLeftWidth,
+        borderRight: style.borderRightWidth,
+        borderTop: style.borderTopWidth,
+        box: {
+          bottom: card.getBoundingClientRect().bottom,
+          height: card.getBoundingClientRect().height,
+          top: card.getBoundingClientRect().top,
+          width: card.getBoundingClientRect().width,
+        },
+      };
+    });
+    const firstCard = cards[0]!.box;
+    const firstCardVisible = Math.max(
+      0,
+      Math.min(window.innerHeight, firstCard.bottom) -
+        Math.max(0, firstCard.top),
+    );
+
+    return {
+      addGame: box(".page--home .home-add-game"),
+      cards,
+      dailyDrills: box("#daily-drills .section-heading"),
+      firstCardVisible,
+      hero: box(".page--home .arena-hero"),
+      heroCta: box(".page--home .arena-hero__cta"),
+      lockedHeights: [
+        ...document.querySelectorAll<HTMLElement>(".page--home .locked-card"),
+      ].map((card) => card.getBoundingClientRect().height),
+      overflow:
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+      resources: [
+        ...document.querySelectorAll<HTMLElement>(
+          ".page--home .home-resources a",
+        ),
+      ].map((link) => link.getBoundingClientRect().height),
+      streak: box(".page--home .streak-nudge"),
+      streakCta: box(".page--home .streak-nudge__cta"),
+      streakTitle: box(".page--home .streak-nudge h2"),
+    };
+  });
+
+  expect(metrics.overflow).toBeLessThanOrEqual(0);
+  expect(metrics.hero.height).toBeLessThanOrEqual(isMobile ? 360 : 288);
+  expect(metrics.streak.height).toBeLessThanOrEqual(isMobile ? 128 : 112);
+  expect(metrics.streakTitle.height).toBeLessThanOrEqual(24);
+  expect(metrics.heroCta.height).toBeGreaterThanOrEqual(44);
+  expect(metrics.streakCta.height).toBeGreaterThanOrEqual(44);
+  expect(metrics.firstCardVisible).toBeGreaterThanOrEqual(180);
+  expect(metrics.cards.every((card) => card.borderTop === "1px")).toBe(true);
+  expect(metrics.cards.every((card) => card.borderRight === "1px")).toBe(true);
+  expect(metrics.cards.every((card) => card.borderBottom === "1px")).toBe(true);
+  expect(metrics.cards.every((card) => card.borderLeft === "1px")).toBe(true);
+  expect(new Set(metrics.cards.map((card) => card.background)).size).toBe(1);
+  expect(metrics.resources.every((height) => height >= 44)).toBe(true);
+  expect(
+    metrics.lockedHeights.every((height) => height <= (isMobile ? 190 : 196)),
+  ).toBe(true);
+
+  if (isMobile) {
+    expect(metrics.dailyDrills.top).toBeLessThan(660);
+    expect(metrics.addGame.height).toBeGreaterThanOrEqual(44);
+  } else {
+    expect(metrics.dailyDrills.top).toBeGreaterThanOrEqual(460);
+    expect(metrics.dailyDrills.top).toBeLessThanOrEqual(480);
+    expect(metrics.addGame.height).toBe(44);
+    expect(metrics.addGame.width).toBeLessThan(240);
+    expect(
+      Math.abs(metrics.cards[0]!.box.height - metrics.cards[1]!.box.height),
+    ).toBeLessThanOrEqual(1);
+    expect(
+      Math.abs(metrics.cards[2]!.box.height - metrics.cards[3]!.box.height),
+    ).toBeLessThanOrEqual(1);
+  }
+});
+
+test("Home streak has an overflow-safe 320px fallback", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "Mobile-only fallback");
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto("/");
+
+  const streak = page.getByRole("region", { name: "Daily streak" });
+  const streakBox = await streak.boundingBox();
+  expect(streakBox).not.toBeNull();
+  expect(streakBox!.height).toBeLessThanOrEqual(170);
+  await expect(
+    streak.getByRole("link", {
+      name: "Play today. 5 days to 7-day target.",
+    }),
+  ).toBeVisible();
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+
+  const fallbackLayout = await page.evaluate(() => ({
+    contentBounds: [
+      ...document.querySelectorAll<HTMLElement>(
+        ".page--home .drill-card, .page--home .home-play-card, .page--home .locked-card, .page--home .home-resources a",
+      ),
+    ].map((element) => ({
+      left: element.getBoundingClientRect().left,
+      right: element.getBoundingClientRect().right,
+    })),
+    lockedHeights: [
+      ...document.querySelectorAll<HTMLElement>(".page--home .locked-card"),
+    ].map((element) => element.getBoundingClientRect().height),
+  }));
+  expect(
+    fallbackLayout.contentBounds.every(
+      ({ left, right }) => left >= 16 && right <= 304,
+    ),
+  ).toBe(true);
+  expect(fallbackLayout.lockedHeights.every((height) => height <= 190)).toBe(
+    true,
   );
 });
 
