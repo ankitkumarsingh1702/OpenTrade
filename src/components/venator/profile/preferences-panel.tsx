@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 
 import { TacticalToggle } from "@/components/venator/profile/tactical-toggle";
-import { defaultPreferences, parsePreferences, PREFERENCES_KEY } from "@/lib/preferences";
+import {
+  defaultPreferences,
+  parsePreferences,
+  PREFERENCES_KEY,
+} from "@/lib/preferences";
 
 export function PreferencesPanel() {
   const [preferences, setPreferences] = useState(defaultPreferences);
@@ -11,7 +15,9 @@ export function PreferencesPanel() {
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      setPreferences(parsePreferences(window.localStorage.getItem(PREFERENCES_KEY)));
+      setPreferences(
+        parsePreferences(window.localStorage.getItem(PREFERENCES_KEY)),
+      );
       setHydrated(true);
     });
 
@@ -36,7 +42,9 @@ export function PreferencesPanel() {
           <TacticalToggle
             checked={preferences.darkMode}
             label="Use dark appearance"
-            onChange={(darkMode) => setPreferences((current) => ({ ...current, darkMode }))}
+            onChange={(darkMode) =>
+              setPreferences((current) => ({ ...current, darkMode }))
+            }
           />
           <span className={preferences.darkMode ? "is-active" : ""}>Dark</span>
         </div>
@@ -47,7 +55,9 @@ export function PreferencesPanel() {
           <span aria-hidden="true" />
           Arena Feedback
         </h2>
-        <p className="profile-section-description">Short local sound cues make enabled controls feel responsive.</p>
+        <p className="profile-section-description">
+          Short local sound cues make enabled controls feel responsive.
+        </p>
         <div className="reminder-list">
           <div className="hud-panel clip-notch-br reminder-row">
             <span>Sound FX</span>
@@ -55,7 +65,9 @@ export function PreferencesPanel() {
               checked={preferences.soundEffects}
               compact
               label="Arena sound effects"
-              onChange={(soundEffects) => setPreferences((current) => ({ ...current, soundEffects }))}
+              onChange={(soundEffects) =>
+                setPreferences((current) => ({ ...current, soundEffects }))
+              }
             />
           </div>
         </div>
@@ -66,7 +78,9 @@ export function PreferencesPanel() {
           <span aria-hidden="true" />
           Daily Reminders
         </h2>
-        <p className="profile-section-description">Gary checks in twice a day to deliver your streak supplies.</p>
+        <p className="profile-section-description">
+          Gary checks in twice a day to deliver your streak supplies.
+        </p>
         <div className="reminder-list">
           <div className="hud-panel clip-notch-br reminder-row">
             <span>Email</span>
@@ -74,7 +88,9 @@ export function PreferencesPanel() {
               checked={preferences.emailReminders}
               compact
               label="Email reminders"
-              onChange={(emailReminders) => setPreferences((current) => ({ ...current, emailReminders }))}
+              onChange={(emailReminders) =>
+                setPreferences((current) => ({ ...current, emailReminders }))
+              }
             />
           </div>
           <div className="hud-panel clip-notch-br reminder-row">
@@ -82,7 +98,12 @@ export function PreferencesPanel() {
               <span>Text</span>
               <strong>Verification Required</strong>
             </div>
-            <TacticalToggle checked={false} compact disabled label="Text reminders require verification" />
+            <TacticalToggle
+              checked={false}
+              compact
+              disabled
+              label="Text reminders require verification"
+            />
           </div>
         </div>
       </section>

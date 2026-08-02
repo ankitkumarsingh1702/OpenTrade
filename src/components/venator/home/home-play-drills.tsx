@@ -19,7 +19,9 @@ export function HomePlayDrills() {
               <strong>{game.index}</strong>
             </span>
             <span className="home-play-card__title">{game.title}</span>
-            <span className="home-play-card__description">{game.description}</span>
+            <span className="home-play-card__description">
+              {game.description}
+            </span>
             <span aria-hidden="true" className="home-play-card__track">
               <i />
             </span>

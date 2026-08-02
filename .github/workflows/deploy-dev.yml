@@ -1,0 +1,133 @@
+name: Deploy dev
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+env:
+  CI: "true"
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  CLOUD_RUN_SERVICE: ${{ vars.CLOUD_RUN_SERVICE }}
+  CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT: ${{ vars.CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT }}
+  CLOUD_RUN_URL: ${{ vars.CLOUD_RUN_URL }}
+
+jobs:
+  deploy:
+    name: Candidate, smoke, and promote
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: dev
+      url: ${{ vars.CLOUD_RUN_URL }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+      - name: Re-run release gates
+        run: |
+          npm run format:check
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run security
+          npm run build
+      - name: Record current production revision
+        id: previous
+        run: |
+          previous_revision="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --format=json | jq -r '[.status.traffic[]? | select(.percent == 100 and .revisionName != null)][0].revisionName // ""')"
+          echo "revision=$previous_revision" >> "$GITHUB_OUTPUT"
+      - name: Deploy isolated candidate revision
+        id: candidate
+        run: |
+          short_sha="${GITHUB_SHA::7}"
+          candidate_tag="candidate-$short_sha"
+          gcloud run deploy "$CLOUD_RUN_SERVICE" \
+            --source . \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --service-account "$CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT" \
+            --allow-unauthenticated \
+            --no-traffic \
+            --tag "$candidate_tag" \
+            --revision-suffix "$short_sha" \
+            --quiet
+          service_json="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --format=json)"
+          candidate_url="$(jq -r --arg tag "$candidate_tag" '[.status.traffic[]? | select(.tag == $tag)][0].url // ""' <<< "$service_json")"
+          revision="$(jq -r --arg revision "$CLOUD_RUN_SERVICE-$short_sha" '[.status.traffic[]? | select(.revisionName == $revision)][0].revisionName // ""' <<< "$service_json")"
+          test -n "$candidate_url"
+          test -n "$revision"
+          echo "url=$candidate_url" >> "$GITHUB_OUTPUT"
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+      - name: Smoke candidate routes
+        run: npm run smoke -- "${{ steps.candidate.outputs.url }}"
+      - name: Exercise candidate in desktop and mobile browsers
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.candidate.outputs.url }}
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - name: Promote exact candidate to 100 percent
+        id: promote
+        run: |
+          gcloud run services update-traffic "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --to-revisions "${{ steps.candidate.outputs.revision }}=100" \
+            --quiet
+      - name: Verify stable service after promotion
+        run: npm run smoke -- "$CLOUD_RUN_URL"
+      - name: Upload deployment browser evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: deployed-browser-evidence-${{ github.sha }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Roll back traffic after a failed promotion check
+        if: ${{ failure() && steps.promote.outcome == 'success' && steps.previous.outputs.revision != '' }}
+        run: |
+          gcloud run services update-traffic "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --to-revisions "${{ steps.previous.outputs.revision }}=100" \
+            --quiet
+          npm run smoke -- "$CLOUD_RUN_URL"
+      - name: Publish deployment summary
+        if: ${{ success() }}
+        run: |
+          {
+            echo "## OpenTrade dev deployment"
+            echo ""
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Revision: \`${{ steps.candidate.outputs.revision }}\`"
+            echo "- Candidate smoke: passed"
+            echo "- Stable smoke: passed"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -14,7 +14,11 @@ export default function ArenaPage() {
       <ArenaHero expanded />
       <div className="arena-sections">
         <SectionHeading>Daily Drills</SectionHeading>
-        <section aria-labelledby="drill-selector-title" id="drill-selector" tabIndex={-1}>
+        <section
+          aria-labelledby="drill-selector-title"
+          id="drill-selector"
+          tabIndex={-1}
+        >
           <div id="drill-selector-title">
             <SectionHeading level={3}>Pick a drill</SectionHeading>
           </div>

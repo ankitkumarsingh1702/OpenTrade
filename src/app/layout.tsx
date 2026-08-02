@@ -16,7 +16,9 @@ export const metadata: Metadata = {
   description: "The OpenTrade Venator tactical trading simulator interface.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   return (
     <html data-scroll-behavior="smooth" lang="en">
       <body>{children}</body>

@@ -5,7 +5,7 @@ A faithful, responsive Next.js implementation of the supplied OpenTrade Venator 
 ## Local development
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -14,12 +14,18 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Quality gates
 
 ```bash
+npm run format:check
 npm run lint
 npm run typecheck
 npm test
+npm run security
 npm run test:e2e
 npm run build
 ```
+
+Pull requests into `dev` run every gate above, including desktop/mobile browser coverage and accessibility checks. Successful internal PRs are squash-merged automatically. Every `dev` merge is deployed to an isolated Cloud Run candidate revision, exercised through the public candidate URL, and promoted only after the smoke and browser suites pass. A verified `dev` revision is then proposed and merged into protected `main`.
+
+See [Automated delivery](docs/delivery.md) for the branch, deployment, rollback, and recovery model.
 
 The app is intentionally frontend-only. Competition, payments, authentication, trading, reminder delivery, and other external workflows are represented honestly as local demo interactions.
 
@@ -37,3 +43,5 @@ gcloud run deploy opentrade \
   --service-account opentrade-frontend@hushh-tech-prod.iam.gserviceaccount.com \
   --allow-unauthenticated
 ```
+
+Routine releases use GitHub's short-lived OIDC identity rather than a stored service-account key. The command above is retained for an authorized operator recovery only.
