@@ -96,30 +96,35 @@ if (packageJson.homepage !== packageExpectations.homepage) {
 }
 
 const citation = readFileSync("CITATION.cff", "utf8");
+const citationLines = new Set(
+  citation.split(/\r?\n/u).map((line) => line.trim()),
+);
 for (const required of [
   "cff-version: 1.2.0",
   "title: OpenTrade Venator",
-  "family-names: Singh",
+  "- family-names: Singh",
   "given-names: Ankit Kumar",
   "version: 1.0.0",
   "date-released: 2026-08-02",
   `repository-code: ${canonical}`,
   "license: AGPL-3.0-or-later",
 ]) {
-  if (!citation.includes(required)) {
+  if (!citationLines.has(required)) {
     failures.push(`CITATION.cff is missing: ${required}`);
   }
 }
 
-for (const file of [
-  "COPYRIGHT.md",
-  "NOTICE",
-  "ATTRIBUTION.md",
-  "README.md",
-  "CITATION.cff",
-]) {
+const canonicalLines = {
+  "ATTRIBUTION.md": `> Canonical source: <${canonical}>`,
+  "CITATION.cff": `repository-code: ${canonical}`,
+  "COPYRIGHT.md": `<${canonical}>`,
+  NOTICE: canonical,
+  "README.md": `<${canonical}>`,
+};
+for (const [file, expectedLine] of Object.entries(canonicalLines)) {
   const source = readFileSync(file, "utf8");
-  if (!source.includes(canonical)) {
+  const lines = new Set(source.split(/\r?\n/u).map((line) => line.trim()));
+  if (!lines.has(expectedLine)) {
     failures.push(`${file} is missing the canonical repository.`);
   }
 }
