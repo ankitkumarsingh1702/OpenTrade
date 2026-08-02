@@ -15,31 +15,65 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Record verified release status
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Build a release branch from current main
+        id: release
         env:
           GH_TOKEN: ${{ github.token }}
           VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$VERIFIED_SHA" \
+          git fetch origin main dev
+          if git merge-base --is-ancestor "$VERIFIED_SHA" origin/main; then
+            echo "main already contains verified dev"
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          short_sha="${VERIFIED_SHA::7}"
+          release_branch="release/dev-${short_sha}-${GITHUB_RUN_ATTEMPT}"
+          git switch --create "$release_branch" origin/main
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge --no-ff "$VERIFIED_SHA" -m "release: integrate verified dev $short_sha"
+          release_sha="$(git rev-parse HEAD)"
+          git push --set-upstream origin "$release_branch"
+
+          echo "needed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$release_branch" >> "$GITHUB_OUTPUT"
+          echo "sha=$release_sha" >> "$GITHUB_OUTPUT"
+      - name: Record exact release verification status
+        if: ${{ steps.release.outputs.needed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$RELEASE_SHA" \
             -f state=success \
             -f context='Release verification' \
             -f description='Candidate and stable Cloud Run smoke passed' \
             -f target_url="${{ github.event.workflow_run.html_url }}"
-      - name: Create or update dev to main pull request
+      - name: Create and queue the protected main pull request
+        if: ${{ steps.release.outputs.needed == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_BRANCH: ${{ steps.release.outputs.branch }}
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          if [[ "$(gh api "repos/$GITHUB_REPOSITORY/compare/main...dev" --jq '.ahead_by')" == "0" ]]; then
-            echo "main already contains dev"
+          pr_url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$RELEASE_BRANCH" \
+            --title 'release: sync verified dev to main' \
+            --body "Promotes verified dev SHA $VERIFIED_SHA after candidate E2E, stable-route smoke, and exact Cloud Run revision promotion passed.")"
+          if gh pr merge "$pr_url" --auto --merge; then
             exit 0
           fi
-          pr_url="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head dev --state open --json url --jq '.[0].url // ""')"
-          if [[ -z "$pr_url" ]]; then
-            pr_url="$(gh pr create \
-              --repo "$GITHUB_REPOSITORY" \
-              --base main \
-              --head dev \
-              --title 'release: sync verified dev to main' \
-              --body 'Automated promotion after candidate E2E, stable-route smoke, and exact Cloud Run revision promotion passed.')"
-          fi
-          gh pr merge "$pr_url" --auto --merge
+          for attempt in {1..12}; do
+            if gh pr merge "$pr_url" --merge; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
