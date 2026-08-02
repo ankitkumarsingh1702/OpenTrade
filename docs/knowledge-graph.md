@@ -1,6 +1,6 @@
 # OpenTrade Venator task knowledge graph
 
-The Home streak nudge starts from the latest verified `origin/dev` commit `98fe9d6` on the isolated `codex/home-streak-nudge` worktree. It is an additive frontend-preview feature with no persistence or completion API.
+The Home visual cleanup starts from verified `origin/dev` commit `bd6b380` on the isolated `codex/home-cleanup` worktree. It is a Home-scoped frontend refinement with no persistence, completion API, or shared-shell change.
 
 ```text
 Venator localhost experience
@@ -26,18 +26,19 @@ Venator localhost experience
 │       └── shared desktop rail / scrollable mobile HUD implementation
 ├── Dashboard (/)
 │   ├── Global Trading Arena hero
+│   │   └── compact static grayscale media, flat frame, and unchanged `/arena` action
 │   ├── Daily streak nudge
 │   │   ├── server-rendered from the shared operator snapshot
 │   │   ├── truthful 2-of-7 milestone progress without date or completion claims
-│   │   ├── same-page `Choose a Daily Drill` fragment action
-│   │   ├── seven compact non-interactive markers with semantic progressbar output
+│   │   ├── same-page `Play today` fragment action
+│   │   ├── seven compact non-interactive markers with only the latest completion checked
 │   │   └── no merchandise, duel, reward entitlement, timer, analytics, or local persistence
 │   ├── Daily Drills
-│   │   ├── two unchanged progression drills
-│   │   ├── News → exact OpenTrade India game URL
-│   │   └── Tickerdle → exact OpenTrade India game URL
+│   │   ├── two unchanged progression drills in flat, unified cards
+│   │   ├── News → exact OpenTrade India game URL in the shared quiet card family
+│   │   └── Tickerdle → exact OpenTrade India game URL in the shared quiet card family
 │   ├── honest add-game preview action
-│   ├── illustrated locked Arena and Real money modes
+│   ├── restrained illustrated locked Arena and Real money modes
 │   │   └── exact shared unlock contract: 7500 more XP to unlock
 │   └── canonical Games / Learn / Blog / About links
 ├── Arena (/arena)
@@ -59,12 +60,12 @@ Venator localhost experience
 │   ├── bounded Perfect White click burst with keyboard-position fallback
 │   ├── navigation and dialogs remain functional when audio is blocked
 │   ├── the streak CTA inherits the existing launch sound and bounded click burst
-│   └── reduced-motion mode suppresses entrance, pulse, scan, and burst movement
+│   └── reduced-motion mode suppresses the Home fade, arrow, and burst movement
 ├── Verification
 │   ├── TypeScript and ESLint
 │   ├── Vitest fixture, URL-safety, validation, and exact theme-token tests
 │   ├── Playwright route, exact-link, computed theme, mobile overflow, and axe checks
-│   └── 1280x1024 desktop fidelity plus 390x844 mobile screenshot review
+│   └── 1280x720/1024 desktop plus 390x844 and 320px mobile screenshot review
 └── Production delivery
     ├── existing Cloud Run service: opentrade / us-central1
     ├── candidate revision smoke before traffic promotion

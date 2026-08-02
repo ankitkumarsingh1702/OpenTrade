@@ -26,4 +26,15 @@ describe("OpenTrade brand palette", () => {
       /#ea4c89|#ffb1c6|rgba\(\s*234\s*,\s*76\s*,\s*137/i,
     );
   });
+
+  it("keeps Home free of retired game accents and decorative motion", () => {
+    expect(themeCss).not.toMatch(/#536dfe|#2aa7c6/i);
+    expect(themeCss).not.toMatch(
+      /streak-node-pulse|arena-card-scan|arena-card-reveal/i,
+    );
+    expect(themeCss).not.toMatch(/\.page--home\s+\.home-play-card::after/i);
+    expect(themeCss).toMatch(
+      /\.page--home\s+\.home-play-card\s*{[\s\S]*?--game-accent:\s*var\(--accent\)/i,
+    );
+  });
 });
