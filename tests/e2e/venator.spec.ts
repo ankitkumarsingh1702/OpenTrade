@@ -1,3 +1,8 @@
+/*
+ * Copyright © 2026 Ankit Kumar Singh
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
@@ -289,6 +294,72 @@ test("official OpenTrade identity blends into the black shell and owns favicon m
       document.documentElement.clientWidth,
   );
   expect(overflow).toBe(0);
+});
+
+test("legal identity and build provenance remain restrained and accessible", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const footer = page.getByRole("contentinfo", {
+    name: "OpenTrade legal and build information",
+  });
+  await footer.scrollIntoViewIfNeeded();
+  await expect(footer).toBeVisible();
+  await expect(footer).toContainText(
+    "Source available under AGPL-3.0-or-later",
+  );
+  await expect(footer).toContainText("v1.0.0");
+
+  const expectedLinks = [
+    ["Source", "https://github.com/ankitkumarsingh1702/OpenTrade"],
+    [
+      "Licence",
+      "https://github.com/ankitkumarsingh1702/OpenTrade/blob/main/LICENSE",
+    ],
+    [
+      "Copyright",
+      "https://github.com/ankitkumarsingh1702/OpenTrade/blob/main/COPYRIGHT.md",
+    ],
+    [
+      "Trademarks",
+      "https://github.com/ankitkumarsingh1702/OpenTrade/blob/main/TRADEMARKS.md",
+    ],
+  ] as const;
+  for (const [name, href] of expectedLinks) {
+    await expect(footer.getByRole("link", { name })).toHaveAttribute(
+      "href",
+      href,
+    );
+  }
+
+  await expect(page.locator('meta[name="application-origin"]')).toHaveAttribute(
+    "content",
+    /github\.com\/ankitkumarsingh1702\/OpenTrade/,
+  );
+  await expect(
+    page.locator('meta[name="opentrade-origin-id"]'),
+  ).toHaveAttribute("content", "OPENTRADE-CANONICAL-ANKIT-2026");
+
+  const manifest = await page.request.get("/manifest.webmanifest");
+  expect(manifest.ok()).toBe(true);
+  expect(await manifest.json()).toMatchObject({
+    name: "OpenTrade Venator",
+    id: "OPENTRADE-CANONICAL-ANKIT-2026",
+    theme_color: "#212850",
+  });
+
+  const accessibility = await new AxeBuilder({ page })
+    .include(".legal-footer")
+    .analyze();
+  expect(accessibility.violations).toEqual([]);
+
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 });
 
 test("desktop pages have no serious accessibility violations", async ({

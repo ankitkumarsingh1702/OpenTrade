@@ -1,3 +1,8 @@
+/*
+ * Copyright © 2026 Ankit Kumar Singh
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import Image from "next/image";
 
 import { NavLinks } from "@/components/venator/shell/nav-links";

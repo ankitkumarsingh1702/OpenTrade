@@ -1,3 +1,8 @@
+/*
+ * Copyright © 2026 Ankit Kumar Singh
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import { ActionButton } from "@/components/venator/ui/action-button";
 import { MaterialIcon } from "@/components/venator/ui/material-icon";
 import { milestones } from "@/data/venator";

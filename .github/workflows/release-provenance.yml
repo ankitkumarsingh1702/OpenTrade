@@ -1,0 +1,89 @@
+name: Release provenance
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  attestations: write
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: Build, attest, and release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Verify semantic version and protected main ancestry
+        run: |
+          git fetch origin main
+          version="$(node -p 'require("./package.json").version')"
+          test "$GITHUB_REF_NAME" = "v$version"
+          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - run: npm ci
+      - run: npm run provenance:generate -- --sha "$GITHUB_SHA"
+      - run: npm run provenance:check -- --sha "$GITHUB_SHA"
+      - run: npm run legal:check
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run security
+      - run: npm run build
+      - name: Build deterministic archive, SBOM, and checksums
+        id: release-files
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          archive="opentrade-$version.tar.gz"
+          sbom="opentrade-$version.spdx.json"
+          mkdir -p release-root
+          cp -R .next/standalone release-root/application
+          mkdir -p release-root/application/.next
+          cp -R .next/static release-root/application/.next/static
+          cp -R public release-root/application/public
+          cp LICENSE COPYRIGHT.md NOTICE ATTRIBUTION.md TRADEMARKS.md THIRD_PARTY_NOTICES.md release-root/
+          cp -R third_party_licenses release-root/third_party_licenses
+          npm run --silent sbom > "$sbom"
+          commit_epoch="$(git show -s --format=%ct "$GITHUB_SHA")"
+          tar --sort=name --mtime="@$commit_epoch" --owner=0 --group=0 --numeric-owner -czf "$archive" -C release-root .
+          sha256sum "$archive" "$sbom" LICENSE > SHA256SUMS
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+          echo "sbom=$sbom" >> "$GITHUB_OUTPUT"
+      - name: Attest release archive
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-path: ${{ steps.release-files.outputs.archive }}
+      - name: Attest SPDX SBOM
+        uses: actions/attest-sbom@4651f806c01d8637787e274ac3bdf724ef169f34 # v3
+        with:
+          subject-path: ${{ steps.release-files.outputs.archive }}
+          sbom-path: ${{ steps.release-files.outputs.sbom }}
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          release_date="$(git show -s --format=%cI "$GITHUB_SHA")"
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "OpenTrade $version" \
+            --notes "Official OpenTrade release $version
+
+          - Date: $release_date
+          - Commit: $GITHUB_SHA
+          - Licence: AGPL-3.0-or-later
+          - Canonical source: https://github.com/$GITHUB_REPOSITORY
+
+          The attached archive, SPDX SBOM, checksums, and GitHub attestations preserve release provenance. OpenTrade branding remains separately protected." \
+            opentrade-*.tar.gz opentrade-*.spdx.json SHA256SUMS

@@ -43,8 +43,13 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
       - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+      - name: Generate exact build provenance
+        run: |
+          npm run provenance:generate -- --sha "$GITHUB_SHA"
+          npm run provenance:check -- --sha "$GITHUB_SHA"
       - name: Re-run release gates
         run: |
+          npm run legal:check
           npm run format:check
           npm run lint
           npm run typecheck
