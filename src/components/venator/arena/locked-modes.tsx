@@ -2,14 +2,16 @@ import { MaterialIcon } from "@/components/venator/ui/material-icon";
 
 const lockedModes = [
   {
+    id: "arena",
     title: "Arena",
     description: "Build five picks. Beat ChatGPT.",
-    status: "7700 more XP to unlock",
+    status: "7500 more XP to unlock",
   },
   {
+    id: "real-money",
     title: "Real money",
-    description: "Not available yet. Complete four levels.",
-    status: "Eligibility required",
+    description: "Not available yet",
+    status: "Complete four levels. Eligibility required.",
   },
 ];
 
@@ -17,14 +19,21 @@ export function LockedModes() {
   return (
     <section aria-label="Locked modes" className="locked-grid">
       {lockedModes.map((mode) => (
-        <article className="locked-card clip-notch-br" data-disabled="true" key={mode.title}>
-          <div className="locked-card__topline">
-            <MaterialIcon name="lock" />
-            <span>Locked</span>
+        <article
+          className={`locked-card locked-card--${mode.id} clip-notch-br`}
+          data-disabled="true"
+          key={mode.title}
+        >
+          <span aria-hidden="true" className="locked-card__art" />
+          <div className="locked-card__content">
+            <div className="locked-card__topline">
+              <MaterialIcon name="lock" />
+              <span>Locked</span>
+            </div>
+            <h3>{mode.title}</h3>
+            <p>{mode.description}</p>
+            <div className="locked-card__status">{mode.status}</div>
           </div>
-          <h3>{mode.title}</h3>
-          <p>{mode.description}</p>
-          <div className="locked-card__status">{mode.status}</div>
         </article>
       ))}
     </section>

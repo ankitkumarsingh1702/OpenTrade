@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { commandCenterResources, drills, rankings } from "@/data/venator";
+import { commandCenterResources, drills, homeExternalGames, homeResources, rankings } from "@/data/venator";
 import { defaultPreferences, parsePreferences } from "@/lib/preferences";
 import { isValidEmail } from "@/lib/validation";
 
@@ -19,6 +19,7 @@ describe("preference storage safety", () => {
     expect(parsePreferences('{"darkMode":false,"emailReminders":false}')).toEqual({
       darkMode: false,
       emailReminders: false,
+      soundEffects: true,
     });
   });
 
@@ -37,8 +38,8 @@ describe("reference fixture invariants", () => {
 
   it("keeps the approved Command Center resource contract exact and safe", () => {
     expect(commandCenterResources.markets).toEqual([
-      { label: "US", flag: "🇺🇸", href: "https://www.opentrade.live/?market=us" },
-      { label: "India", flag: "🇮🇳", href: "https://www.opentrade.live/?market=india" },
+      { label: "US", flagSrc: "/assets/flags/us.svg", href: "https://www.opentrade.live/?market=us" },
+      { label: "India", flagSrc: "/assets/flags/india.svg", href: "https://www.opentrade.live/?market=india" },
     ]);
     expect(commandCenterResources.discord.href).toBe("https://discord.gg/bt2YuTNcbK");
     expect(commandCenterResources.disclosure).toBe(
@@ -54,5 +55,43 @@ describe("reference fixture invariants", () => {
 
     expect(destinations.every((destination) => new URL(destination).protocol === "https:")).toBe(true);
     expect(new URL(commandCenterResources.discord.href).hostname).toBe("discord.gg");
+  });
+
+  it("keeps the exact Home game and resource destinations", () => {
+    expect(homeExternalGames).toMatchObject([
+      {
+        index: "03",
+        title: "News",
+        description: "Match headlines to companies",
+        elo: 1500,
+        difficulty: "Easy",
+        level: "1/12",
+        href: "https://www.opentrade.live/news?difficulty=easy&level=1&market=india",
+      },
+      {
+        index: "04",
+        title: "Tickerdle",
+        description: "Use state and exchange clues",
+        elo: 1500,
+        difficulty: "Easy",
+        level: "1/12",
+        href: "https://www.opentrade.live/tickerdle?difficulty=easy&level=1&market=india",
+      },
+    ]);
+    expect(homeResources).toEqual([
+      { label: "Games", href: "https://www.opentrade.live/games" },
+      { label: "Learn", href: "https://www.opentrade.live/learn" },
+      { label: "Blog", href: "https://www.opentrade.live/blog" },
+      { label: "About", href: "https://www.opentrade.live/about" },
+    ]);
+
+    for (const destination of [
+      ...homeExternalGames.map((game) => game.href),
+      ...homeResources.map((resource) => resource.href),
+    ]) {
+      const url = new URL(destination);
+      expect(url.protocol).toBe("https:");
+      expect(url.hostname).toBe("www.opentrade.live");
+    }
   });
 });

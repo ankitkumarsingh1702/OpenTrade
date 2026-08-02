@@ -1,4 +1,4 @@
-import type { CampusRanking, Drill, OperatorSnapshot } from "@/types/venator";
+import type { CampusRanking, Drill, ExternalGame, HomeResource, OperatorSnapshot } from "@/types/venator";
 
 export const operator: OperatorSnapshot = {
   handle: "Operator_01",
@@ -11,8 +11,8 @@ export const operator: OperatorSnapshot = {
 
 export const commandCenterResources = {
   markets: [
-    { label: "US", flag: "🇺🇸", href: "https://www.opentrade.live/?market=us" },
-    { label: "India", flag: "🇮🇳", href: "https://www.opentrade.live/?market=india" },
+    { label: "US", flagSrc: "/assets/flags/us.svg", href: "https://www.opentrade.live/?market=us" },
+    { label: "India", flagSrc: "/assets/flags/india.svg", href: "https://www.opentrade.live/?market=india" },
   ],
   discord: {
     label: "Join Discord",
@@ -25,6 +25,38 @@ export const commandCenterResources = {
     href: "https://www.opentrade.live/legal",
   },
 } as const;
+
+export const homeExternalGames: ExternalGame[] = [
+  {
+    id: "news",
+    index: "03",
+    title: "News",
+    description: "Match headlines to companies",
+    elo: 1500,
+    difficulty: "Easy",
+    level: "1/12",
+    icon: "newspaper",
+    href: "https://www.opentrade.live/news?difficulty=easy&level=1&market=india",
+  },
+  {
+    id: "tickerdle",
+    index: "04",
+    title: "Tickerdle",
+    description: "Use state and exchange clues",
+    elo: 1500,
+    difficulty: "Easy",
+    level: "1/12",
+    icon: "analytics",
+    href: "https://www.opentrade.live/tickerdle?difficulty=easy&level=1&market=india",
+  },
+];
+
+export const homeResources: HomeResource[] = [
+  { label: "Games", href: "https://www.opentrade.live/games" },
+  { label: "Learn", href: "https://www.opentrade.live/learn" },
+  { label: "Blog", href: "https://www.opentrade.live/blog" },
+  { label: "About", href: "https://www.opentrade.live/about" },
+];
 
 export const drills: Drill[] = [
   {

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 741 390" role="presentation">
+  <path fill="#fff" d="M0 0h741v390H0z"/>
+  <path fill="#b22234" d="M0 0h741v30H0zM0 60h741v30H0zM0 120h741v30H0zM0 180h741v30H0zM0 240h741v30H0zM0 300h741v30H0zM0 360h741v30H0z"/>
+  <path fill="#3c3b6e" d="M0 0h296.4v210H0z"/>
+  <defs>
+    <circle id="s" cx="0" cy="0" r="5.2" fill="#fff"/>
+    <g id="r6"><use href="#s" x="25"/><use href="#s" x="74"/><use href="#s" x="123"/><use href="#s" x="172"/><use href="#s" x="221"/><use href="#s" x="270"/></g>
+    <g id="r5"><use href="#s" x="49.5"/><use href="#s" x="98.5"/><use href="#s" x="147.5"/><use href="#s" x="196.5"/><use href="#s" x="245.5"/></g>
+  </defs>
+  <g>
+    <use href="#r6" y="18"/><use href="#r5" y="39"/><use href="#r6" y="60"/><use href="#r5" y="81"/>
+    <use href="#r6" y="102"/><use href="#r5" y="123"/><use href="#r6" y="144"/><use href="#r5" y="165"/><use href="#r6" y="186"/>
+  </g>
+</svg>

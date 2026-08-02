@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import { commandCenterResources, operator } from "@/data/venator";
@@ -54,8 +55,8 @@ export function CommandCenter({ mobile = false }: { mobile?: boolean }) {
             <nav aria-label="Market" className="command-center__market-links">
               {commandCenterResources.markets.map((market) => (
                 <a className="command-center__market-link clip-notch-br" href={market.href} key={market.label}>
-                  <span aria-hidden="true" className="command-center__flag">
-                    {market.flag}
+                  <span aria-hidden="true" className="command-center__flag-frame">
+                    <Image alt="" height={18} src={market.flagSrc} unoptimized width={26} />
                   </span>
                   <span>{market.label}</span>
                   <MaterialIcon name="arrow_forward" />

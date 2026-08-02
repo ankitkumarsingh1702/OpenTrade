@@ -3,11 +3,13 @@ export const PREFERENCES_KEY = "opentrade:venator:v1";
 export interface Preferences {
   darkMode: boolean;
   emailReminders: boolean;
+  soundEffects: boolean;
 }
 
 export const defaultPreferences: Preferences = {
   darkMode: true,
   emailReminders: true,
+  soundEffects: true,
 };
 
 export function parsePreferences(value: string | null): Preferences {
@@ -28,6 +30,10 @@ export function parsePreferences(value: string | null): Preferences {
       return {
         darkMode: parsed.darkMode,
         emailReminders: parsed.emailReminders,
+        soundEffects:
+          "soundEffects" in parsed && typeof parsed.soundEffects === "boolean"
+            ? parsed.soundEffects
+            : defaultPreferences.soundEffects,
       };
     }
   } catch {

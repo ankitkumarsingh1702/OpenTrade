@@ -45,6 +45,25 @@ export function PreferencesPanel() {
       <section>
         <h2 className="profile-section-title profile-section-title--tight">
           <span aria-hidden="true" />
+          Arena Feedback
+        </h2>
+        <p className="profile-section-description">Short local sound cues make enabled controls feel responsive.</p>
+        <div className="reminder-list">
+          <div className="hud-panel clip-notch-br reminder-row">
+            <span>Sound FX</span>
+            <TacticalToggle
+              checked={preferences.soundEffects}
+              compact
+              label="Arena sound effects"
+              onChange={(soundEffects) => setPreferences((current) => ({ ...current, soundEffects }))}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="profile-section-title profile-section-title--tight">
+          <span aria-hidden="true" />
           Daily Reminders
         </h2>
         <p className="profile-section-description">Gary checks in twice a day to deliver your streak supplies.</p>

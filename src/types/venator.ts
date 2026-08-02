@@ -36,6 +36,23 @@ export interface Drill {
   icon: MaterialIconName;
 }
 
+export interface ExternalGame {
+  id: "news" | "tickerdle";
+  index: string;
+  title: string;
+  description: string;
+  elo: number;
+  difficulty: string;
+  level: string;
+  icon: MaterialIconName;
+  href: string;
+}
+
+export interface HomeResource {
+  label: "Games" | "Learn" | "Blog" | "About";
+  href: string;
+}
+
 export interface CampusRanking {
   rank: string;
   name: string;
