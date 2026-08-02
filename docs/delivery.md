@@ -11,7 +11,7 @@
 
 ## Validation and deployment
 
-The pull-request workflow runs formatting, linting, type checking, unit tests, a high-severity production dependency audit, the production build, responsive browser tests, and Axe accessibility checks. Browser screenshots, traces, and the HTML report are retained as workflow artifacts.
+The pull-request workflow runs formatting, linting, type checking, unit tests, a high-severity production dependency audit, the production build, responsive browser tests, and Axe accessibility checks. Browser screenshots, traces, and the HTML report are retained for 14 days on pull requests and 30 days for deployed revisions.
 
 A merge into `dev` authenticates to Google Cloud with a short-lived GitHub OIDC token. The identity provider accepts only this repository's `refs/heads/dev` subject; no service-account key is stored in GitHub.
 
