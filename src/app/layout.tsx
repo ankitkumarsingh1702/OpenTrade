@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     template: "%s — OpenTrade",
   },
   description: "The OpenTrade Venator tactical trading simulator interface.",
+  icons: {
+    icon: [{ type: "image/svg+xml", url: "/favicon.svg" }],
+  },
 };
 
 export default function RootLayout({
