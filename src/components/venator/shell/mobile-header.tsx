@@ -1,17 +1,24 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 
 import { CommandCenter } from "@/components/venator/shell/command-center";
 import { NavLinks } from "@/components/venator/shell/nav-links";
 import { LinklessBrand } from "@/components/venator/shell/primary-sidebar";
 import { MaterialIcon } from "@/components/venator/ui/material-icon";
 
+const subscribeToHydration = () => () => undefined;
+
 export function MobileHeader() {
   const pathname = usePathname();
   const navDialog = useRef<HTMLDialogElement>(null);
   const hudDialog = useRef<HTMLDialogElement>(null);
+  const isHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     navDialog.current?.close();
@@ -22,6 +29,7 @@ export function MobileHeader() {
     <header className="mobile-header">
       <button
         aria-label="Open navigation"
+        disabled={!isHydrated}
         onClick={() => navDialog.current?.showModal()}
         type="button"
       >
@@ -30,6 +38,7 @@ export function MobileHeader() {
       <LinklessBrand compact />
       <button
         aria-label="View command center"
+        disabled={!isHydrated}
         onClick={() => hudDialog.current?.showModal()}
         type="button"
       >
