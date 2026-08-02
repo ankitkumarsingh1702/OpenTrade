@@ -1,6 +1,6 @@
 # OpenTrade Venator task knowledge graph
 
-Starting state: an unborn `main` branch in a dedicated empty repository. The implementation branch is `codex/venator-nextjs-ui`.
+The original implementation started from an unborn `main` branch. The identity-infusion fix starts from the latest verified `origin/dev` commit `22050b3` on the isolated `codex/logo-infusion` branch.
 
 ```text
 Venator localhost experience
@@ -11,7 +11,11 @@ Venator localhost experience
 ├── Shared shell
 │   ├── route-aware primary navigation
 │   ├── fixed desktop rails / responsive mobile drawers
-│   ├── OpenTrade wolf identity asset
+│   ├── canonical OpenTrade dog identity
+│   │   ├── byte-for-byte local copy of `https://www.opentrade.live/favicon.svg`
+│   │   ├── one passive same-origin SVG for shell and browser metadata
+│   │   ├── white presentation filter on the continuous pure-black navigation rail
+│   │   └── no checkerboard, image tile, external runtime request, or competing icon file
 │   └── Command Center
 │       ├── unchanged operator snapshot and route-aware currency treatment
 │       ├── bottom-anchored Market links for US and India
@@ -60,4 +64,4 @@ Venator localhost experience
     └── traffic-only rollback to the previously healthy revision
 ```
 
-No backend, authentication, trading engine, persistence service, payments, market data, email/SMS delivery, migrations, or external mutation is introduced by this feature. The supplied HTTPS destinations are ordinary same-tab user-initiated navigation. Audio is synthesized locally with Web Audio and has no network dependency. The multicolor raster wolf logo remains a deliberate asset-level exception to the CSS palette. Production delivery uses the repository's existing frontend-only Cloud Run lane and requires no data migration.
+No backend, authentication, trading engine, persistence service, payments, market data, email/SMS delivery, migrations, or external mutation is introduced by this feature. The supplied HTTPS destinations are ordinary same-tab user-initiated navigation. Audio is synthesized locally with Web Audio and has no network dependency. The canonical black SVG remains unmodified at rest; only its in-app presentation is inverted to Perfect White so the exact geometry remains legible on the requested black rail. Production delivery uses the repository's existing frontend-only Cloud Run lane and requires no data migration.
