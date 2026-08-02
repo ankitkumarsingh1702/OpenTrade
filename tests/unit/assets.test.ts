@@ -7,7 +7,10 @@ const flags = ["us.svg", "india.svg"];
 
 describe("local flag assets", () => {
   it.each(flags)("keeps %s deterministic and passive", (filename) => {
-    const source = readFileSync(join(process.cwd(), "public", "assets", "flags", filename), "utf8");
+    const source = readFileSync(
+      join(process.cwd(), "public", "assets", "flags", filename),
+      "utf8",
+    );
 
     expect(source).toMatch(/<svg[^>]+viewBox=/);
     expect(source).not.toMatch(/<script|<foreignObject|<image/i);

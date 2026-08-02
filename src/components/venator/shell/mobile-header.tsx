@@ -20,28 +20,52 @@ export function MobileHeader() {
 
   return (
     <header className="mobile-header">
-      <button aria-label="Open navigation" onClick={() => navDialog.current?.showModal()} type="button">
+      <button
+        aria-label="Open navigation"
+        onClick={() => navDialog.current?.showModal()}
+        type="button"
+      >
         <MaterialIcon name="menu" />
       </button>
       <LinklessBrand compact />
-      <button aria-label="View command center" onClick={() => hudDialog.current?.showModal()} type="button">
+      <button
+        aria-label="View command center"
+        onClick={() => hudDialog.current?.showModal()}
+        type="button"
+      >
         <MaterialIcon name="person" />
       </button>
 
-      <dialog aria-label="Navigation" className="mobile-drawer mobile-drawer--nav" ref={navDialog}>
+      <dialog
+        aria-label="Navigation"
+        className="mobile-drawer mobile-drawer--nav"
+        ref={navDialog}
+      >
         <div className="mobile-drawer__toolbar">
           <span>Navigation</span>
-          <button aria-label="Close navigation" onClick={() => navDialog.current?.close()} type="button">
+          <button
+            aria-label="Close navigation"
+            onClick={() => navDialog.current?.close()}
+            type="button"
+          >
             <MaterialIcon name="close" />
           </button>
         </div>
         <NavLinks mobile />
       </dialog>
 
-      <dialog aria-label="Command center" className="mobile-drawer mobile-drawer--hud" ref={hudDialog}>
+      <dialog
+        aria-label="Command center"
+        className="mobile-drawer mobile-drawer--hud"
+        ref={hudDialog}
+      >
         <div className="mobile-drawer__toolbar">
           <span>Operator HUD</span>
-          <button aria-label="Close command center" onClick={() => hudDialog.current?.close()} type="button">
+          <button
+            aria-label="Close command center"
+            onClick={() => hudDialog.current?.close()}
+            type="button"
+          >
             <MaterialIcon name="close" />
           </button>
         </div>

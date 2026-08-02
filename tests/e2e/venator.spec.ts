@@ -3,14 +3,20 @@ import { expect, test } from "@playwright/test";
 
 test("dashboard enters the complete Arena flow", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: /global trading arena/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: /global trading arena/i }),
+  ).toBeVisible();
   await expect(page.getByText("Progression")).toHaveCount(2);
   await expect(page.locator(".home-play-card")).toHaveCount(2);
 
   await page.getByRole("link", { name: /enter arena/i }).click();
   await expect(page).toHaveURL(/\/arena$/);
-  await expect(page.getByRole("heading", { name: /pick a drill/i })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Locked modes" })).toContainText("7500 more XP to unlock");
+  await expect(
+    page.getByRole("heading", { name: /pick a drill/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Locked modes" }),
+  ).toContainText("7500 more XP to unlock");
 
   const higherLower = page.getByRole("button", { name: /higher \/ lower/i });
   await higherLower.click();
@@ -53,9 +59,13 @@ test("Home exposes the complete requested game journey", async ({ page }) => {
   await expect(lockedModes).not.toContainText("7700");
   await expect(lockedModes).toContainText("Real money");
   await expect(lockedModes).toContainText("Not available yet");
-  await expect(lockedModes).toContainText("Complete four levels. Eligibility required.");
+  await expect(lockedModes).toContainText(
+    "Complete four levels. Eligibility required.",
+  );
 
-  const resources = page.getByRole("navigation", { name: "OpenTrade resources" });
+  const resources = page.getByRole("navigation", {
+    name: "OpenTrade resources",
+  });
   for (const [label, href] of [
     ["Games", "https://www.opentrade.live/games"],
     ["Learn", "https://www.opentrade.live/learn"],
@@ -70,30 +80,46 @@ test("Home exposes the complete requested game journey", async ({ page }) => {
   await page.getByRole("button", { name: "Add your own game" }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toContainText("Product preview");
-  await expect(dialog).toContainText("Game submissions are not available in this product preview yet.");
+  await expect(dialog).toContainText(
+    "Game submissions are not available in this product preview yet.",
+  );
 });
 
-test("navigation, competition validation, and profile preferences work", async ({ page }, testInfo) => {
+test("navigation, competition validation, and profile preferences work", async ({
+  page,
+}, testInfo) => {
   await page.goto("/compete");
-  await expect(page.getByRole("heading", { level: 1, name: "Compete" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Compete" }),
+  ).toBeVisible();
 
   if (testInfo.project.name === "mobile") {
     await page.getByRole("button", { name: "Open navigation" }).click();
-    await expect(page.getByRole("link", { name: "Compete" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("link", { name: "Compete" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
     await page.getByRole("button", { name: "Close navigation" }).click();
   } else {
-    await expect(page.getByRole("link", { name: "Compete" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("link", { name: "Compete" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   }
   await expect(page.getByRole("listitem")).toHaveCount(9);
 
   const email = page.getByLabel("Student email");
   await email.fill("not-an-email");
   await page.getByRole("button", { name: "Update" }).click();
-  await expect(page.getByText("Enter a valid student email address.")).toBeVisible();
+  await expect(
+    page.getByText("Enter a valid student email address."),
+  ).toBeVisible();
 
   await email.fill("student@iitm.ac.in");
   await page.getByRole("button", { name: "Update" }).click();
-  await expect(page.getByText("Campus interest saved in this local preview.")).toBeVisible();
+  await expect(
+    page.getByText("Campus interest saved in this local preview."),
+  ).toBeVisible();
 
   if (testInfo.project.name === "mobile") {
     await page.goto("/profile");
@@ -101,24 +127,34 @@ test("navigation, competition validation, and profile preferences work", async (
     await page.getByRole("link", { name: "Profile" }).click();
   }
   await expect(page).toHaveURL(/\/profile$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Profile" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Profile" }),
+  ).toBeVisible();
 
   const darkMode = page.getByRole("switch", { name: "Use dark appearance" });
   await expect(darkMode).toBeChecked();
   await darkMode.uncheck();
   await expect(darkMode).not.toBeChecked();
   await page.reload();
-  await expect(page.getByRole("switch", { name: "Use dark appearance" })).not.toBeChecked();
+  await expect(
+    page.getByRole("switch", { name: "Use dark appearance" }),
+  ).not.toBeChecked();
 });
 
-test("brand palette renders Outer Space with contrast-safe Perfect White controls", async ({ page }, testInfo) => {
+test("brand palette renders Outer Space with contrast-safe Perfect White controls", async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop theme contract");
   await page.goto("/");
 
   const palette = await page.evaluate(() => {
     const root = getComputedStyle(document.documentElement);
-    const primary = getComputedStyle(document.querySelector<HTMLElement>(".tactical-button--primary")!);
-    const activeNavigation = getComputedStyle(document.querySelector<HTMLElement>(".nav-link--active")!);
+    const primary = getComputedStyle(
+      document.querySelector<HTMLElement>(".tactical-button--primary")!,
+    );
+    const activeNavigation = getComputedStyle(
+      document.querySelector<HTMLElement>(".nav-link--active")!,
+    );
 
     return {
       accent: root.getPropertyValue("--accent").trim(),
@@ -140,7 +176,9 @@ test("brand palette renders Outer Space with contrast-safe Perfect White control
   });
 });
 
-test("desktop pages have no serious accessibility violations", async ({ page }, testInfo) => {
+test("desktop pages have no serious accessibility violations", async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop accessibility audit");
   for (const route of ["/", "/profile"]) {
     await page.goto(route);
@@ -149,7 +187,9 @@ test("desktop pages have no serious accessibility violations", async ({ page }, 
   }
 });
 
-test("mobile shell exposes navigation and HUD without overflow", async ({ page }, testInfo) => {
+test("mobile shell exposes navigation and HUD without overflow", async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Mobile-only shell test");
   await page.goto("/");
 
@@ -160,21 +200,40 @@ test("mobile shell exposes navigation and HUD without overflow", async ({ page }
   await page.getByRole("button", { name: "View command center" }).click();
   const hud = page.getByRole("dialog", { name: "Command center" });
   await expect(hud).toContainText("Operator_01");
-  await hud.getByRole("link", { name: /Legal disclosures/ }).scrollIntoViewIfNeeded();
+  await hud
+    .getByRole("link", { name: /Legal disclosures/ })
+    .scrollIntoViewIfNeeded();
   await expect(hud.getByRole("navigation", { name: "Market" })).toBeVisible();
-  await expect(hud.getByRole("link", { name: /Legal disclosures/ })).toBeVisible();
-  const hudAccessibility = await new AxeBuilder({ page }).include(".mobile-drawer--hud").analyze();
+  await expect(
+    hud.getByRole("link", { name: /Legal disclosures/ }),
+  ).toBeVisible();
+  const hudAccessibility = await new AxeBuilder({ page })
+    .include(".mobile-drawer--hud")
+    .analyze();
   expect(hudAccessibility.violations).toEqual([]);
   await page.getByRole("button", { name: "Close command center" }).click();
 
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  );
   expect(overflow).toBeLessThanOrEqual(0);
-  await page.getByRole("navigation", { name: "OpenTrade resources" }).scrollIntoViewIfNeeded();
-  await expect(page.getByRole("navigation", { name: "OpenTrade resources" })).toBeVisible();
+  await page
+    .getByRole("navigation", { name: "OpenTrade resources" })
+    .scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole("navigation", { name: "OpenTrade resources" }),
+  ).toBeVisible();
 });
 
-test("Command Center resources keep the approved copy and destinations", async ({ page }, testInfo) => {
-  const routes = testInfo.project.name === "desktop" ? ["/", "/arena", "/compete", "/profile"] : ["/"];
+test("Command Center resources keep the approved copy and destinations", async ({
+  page,
+}, testInfo) => {
+  const routes =
+    testInfo.project.name === "desktop"
+      ? ["/", "/arena", "/compete", "/profile"]
+      : ["/"];
 
   for (const route of routes) {
     await page.goto(route);
@@ -189,34 +248,76 @@ test("Command Center resources keep the approved copy and destinations", async (
         : page.getByRole("complementary", { name: "Command center sidebar" });
 
     const us = commandCenter.getByRole("link", { name: "US", exact: true });
-    const india = commandCenter.getByRole("link", { name: "India", exact: true });
+    const india = commandCenter.getByRole("link", {
+      name: "India",
+      exact: true,
+    });
     const discord = commandCenter.getByRole("link", { name: /Join Discord/ });
-    const legal = commandCenter.getByRole("link", { name: /Legal disclosures/ });
+    const legal = commandCenter.getByRole("link", {
+      name: /Legal disclosures/,
+    });
 
     await legal.scrollIntoViewIfNeeded();
-    await expect(commandCenter.getByRole("heading", { name: "Market", exact: true })).toBeVisible();
-    await expect(us).toHaveAttribute("href", "https://www.opentrade.live/?market=us");
-    await expect(india).toHaveAttribute("href", "https://www.opentrade.live/?market=india");
-    await expect(us.locator("img")).toHaveAttribute("src", "/assets/flags/us.svg");
-    await expect(india.locator("img")).toHaveAttribute("src", "/assets/flags/india.svg");
+    await expect(
+      commandCenter.getByRole("heading", { name: "Market", exact: true }),
+    ).toBeVisible();
+    await expect(us).toHaveAttribute(
+      "href",
+      "https://www.opentrade.live/?market=us",
+    );
+    await expect(india).toHaveAttribute(
+      "href",
+      "https://www.opentrade.live/?market=india",
+    );
+    await expect(us.locator("img")).toHaveAttribute(
+      "src",
+      "/assets/flags/us.svg",
+    );
+    await expect(india.locator("img")).toHaveAttribute(
+      "src",
+      "/assets/flags/india.svg",
+    );
     await expect
-      .poll(() => us.locator("img").evaluate((image) => (image as HTMLImageElement).naturalWidth))
+      .poll(() =>
+        us
+          .locator("img")
+          .evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      )
       .toBeGreaterThan(0);
     await expect
-      .poll(() => india.locator("img").evaluate((image) => (image as HTMLImageElement).naturalWidth))
+      .poll(() =>
+        india
+          .locator("img")
+          .evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      )
       .toBeGreaterThan(0);
-    await expect(commandCenter.getByRole("heading", { name: "Refer a friend", exact: true })).toBeVisible();
-    await expect(discord).toHaveAttribute("href", "https://discord.gg/bt2YuTNcbK");
+    await expect(
+      commandCenter.getByRole("heading", {
+        name: "Refer a friend",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(discord).toHaveAttribute(
+      "href",
+      "https://discord.gg/bt2YuTNcbK",
+    );
     await expect(discord).toHaveAttribute("target", "_blank");
     await expect(discord).toHaveAttribute("rel", /noopener noreferrer/);
-    await expect(commandCenter.locator(".command-center__disclosure")).toContainText(
+    await expect(
+      commandCenter.locator(".command-center__disclosure"),
+    ).toContainText(
       "OpenTrade is a product preview, not investment advice. Investing involves risk, including possible loss of principal.",
     );
-    await expect(legal).toHaveAttribute("href", "https://www.opentrade.live/legal");
+    await expect(legal).toHaveAttribute(
+      "href",
+      "https://www.opentrade.live/legal",
+    );
     await expect(legal).toHaveAttribute("target", "_blank");
     await expect(legal).toHaveAttribute("rel", /noopener noreferrer/);
 
-    const horizontalOverflow = await commandCenter.evaluate((element) => element.scrollWidth - element.clientWidth);
+    const horizontalOverflow = await commandCenter.evaluate(
+      (element) => element.scrollWidth - element.clientWidth,
+    );
     expect(horizontalOverflow).toBeLessThanOrEqual(0);
 
     if (testInfo.project.name === "mobile") {
@@ -225,11 +326,19 @@ test("Command Center resources keep the approved copy and destinations", async (
   }
 });
 
-test("arena feedback is user-triggered, bounded, and reduced-motion safe", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop", "Desktop interaction-effects test");
+test("arena feedback is user-triggered, bounded, and reduced-motion safe", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name !== "desktop",
+    "Desktop interaction-effects test",
+  );
   await page.addInitScript(() => {
     const state = { constructed: 0, feedback: 0, started: 0 };
-    Object.defineProperty(window, "__arenaEffectsTest", { configurable: true, value: state });
+    Object.defineProperty(window, "__arenaEffectsTest", {
+      configurable: true,
+      value: state,
+    });
 
     class AudioContextStub {
       currentTime = 0;
@@ -274,22 +383,42 @@ test("arena feedback is user-triggered, bounded, and reduced-motion safe", async
       }
     }
 
-    Object.defineProperty(window, "AudioContext", { configurable: true, value: AudioContextStub });
+    Object.defineProperty(window, "AudioContext", {
+      configurable: true,
+      value: AudioContextStub,
+    });
     window.addEventListener("opentrade:arena-feedback", () => {
       state.feedback += 1;
     });
   });
 
   await page.goto("/");
-  expect(await page.evaluate(() => (window as unknown as { __arenaEffectsTest: { constructed: number } }).__arenaEffectsTest.constructed)).toBe(0);
+  expect(
+    await page.evaluate(
+      () =>
+        (window as unknown as { __arenaEffectsTest: { constructed: number } })
+          .__arenaEffectsTest.constructed,
+    ),
+  ).toBe(0);
 
   await page.getByRole("button", { name: "Add your own game" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   const activeState = await page.evaluate(
-    () => (window as unknown as { __arenaEffectsTest: { constructed: number; feedback: number; started: number } }).__arenaEffectsTest,
+    () =>
+      (
+        window as unknown as {
+          __arenaEffectsTest: {
+            constructed: number;
+            feedback: number;
+            started: number;
+          };
+        }
+      ).__arenaEffectsTest,
   );
   expect(activeState).toEqual({ constructed: 1, feedback: 1, started: 1 });
-  expect(await page.locator(".tactical-click-burst").count()).toBeLessThanOrEqual(8);
+  expect(
+    await page.locator(".tactical-click-burst").count(),
+  ).toBeLessThanOrEqual(8);
 
   await page.getByRole("button", { name: "Close" }).click();
   await page.waitForTimeout(550);
@@ -298,10 +427,15 @@ test("arena feedback is user-triggered, bounded, and reduced-motion safe", async
   expect(await page.locator(".tactical-click-burst").count()).toBe(0);
 });
 
-test("blocked Web Audio never blocks the requested action", async ({ page }, testInfo) => {
+test("blocked Web Audio never blocks the requested action", async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop audio fallback test");
   await page.addInitScript(() => {
-    Object.defineProperty(window, "AudioContext", { configurable: true, value: undefined });
+    Object.defineProperty(window, "AudioContext", {
+      configurable: true,
+      value: undefined,
+    });
   });
   await page.goto("/");
   await page.getByRole("button", { name: "Add your own game" }).click();

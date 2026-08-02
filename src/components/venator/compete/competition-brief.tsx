@@ -9,13 +9,20 @@ const facts = [
 
 export function CompetitionBrief() {
   return (
-    <section className="competition-brief clip-notch-both" aria-labelledby="competition-title">
+    <section
+      className="competition-brief clip-notch-both"
+      aria-labelledby="competition-title"
+    >
       <p className="competition-brief__host">
         <MaterialIcon name="wifi_tethering" />
         Hosted by Capital Markets Association
       </p>
-      <h2 id="competition-title">CMA x FinTech x FINSOC OpenTrade Case Competition</h2>
-      <p className="competition-brief__summary">Build a stock portfolio and test it against OpenTrade AI agents.</p>
+      <h2 id="competition-title">
+        CMA x FinTech x FINSOC OpenTrade Case Competition
+      </h2>
+      <p className="competition-brief__summary">
+        Build a stock portfolio and test it against OpenTrade AI agents.
+      </p>
       <dl className="competition-facts clip-notch-both">
         {facts.map((fact) => (
           <div key={fact.label}>
@@ -28,7 +35,11 @@ export function CompetitionBrief() {
         ))}
       </dl>
       <div className="competition-actions">
-        <ActionButton icon="login" label="Event Signup" notice="Event registration is not connected in this local interface preview." />
+        <ActionButton
+          icon="login"
+          label="Event Signup"
+          notice="Event registration is not connected in this local interface preview."
+        />
         <ActionButton
           icon="swords"
           label="Enter Competition"

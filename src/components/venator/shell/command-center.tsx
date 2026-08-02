@@ -39,7 +39,13 @@ export function CommandCenter({ mobile = false }: { mobile?: boolean }) {
           </div>
           <div className="operator-stats__row">
             <dt>G-Coins</dt>
-            <dd className={profileCurrency ? "operator-stats__currency" : undefined}>{operator.coins}</dd>
+            <dd
+              className={
+                profileCurrency ? "operator-stats__currency" : undefined
+              }
+            >
+              {operator.coins}
+            </dd>
           </div>
           <div className="operator-stats__row operator-stats__row--quests">
             <dt>Active Quests</dt>
@@ -54,9 +60,23 @@ export function CommandCenter({ mobile = false }: { mobile?: boolean }) {
             </h3>
             <nav aria-label="Market" className="command-center__market-links">
               {commandCenterResources.markets.map((market) => (
-                <a className="command-center__market-link clip-notch-br" href={market.href} key={market.label}>
-                  <span aria-hidden="true" className="command-center__flag-frame">
-                    <Image alt="" height={18} loading="eager" src={market.flagSrc} unoptimized width={26} />
+                <a
+                  className="command-center__market-link clip-notch-br"
+                  href={market.href}
+                  key={market.label}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="command-center__flag-frame"
+                  >
+                    <Image
+                      alt=""
+                      height={18}
+                      loading="eager"
+                      src={market.flagSrc}
+                      unoptimized
+                      width={26}
+                    />
                   </span>
                   <span>{market.label}</span>
                   <MaterialIcon name="arrow_forward" />
@@ -65,8 +85,14 @@ export function CommandCenter({ mobile = false }: { mobile?: boolean }) {
             </nav>
           </section>
 
-          <section aria-labelledby={referralHeadingId} className="command-center__referral">
-            <h3 className="command-center__section-label" id={referralHeadingId}>
+          <section
+            aria-labelledby={referralHeadingId}
+            className="command-center__referral"
+          >
+            <h3
+              className="command-center__section-label"
+              id={referralHeadingId}
+            >
               Refer a friend
             </h3>
             <a
@@ -98,7 +124,9 @@ export function CommandCenter({ mobile = false }: { mobile?: boolean }) {
   );
 
   if (mobile) {
-    return <div className="command-center command-center--mobile">{content}</div>;
+    return (
+      <div className="command-center command-center--mobile">{content}</div>
+    );
   }
 
   return (

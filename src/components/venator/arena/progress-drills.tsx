@@ -12,7 +12,8 @@ const progressDrills = [
   {
     category: "Endurance",
     title: "Runway",
-    description: "Maintain portfolio delta within acceptable parameters during high volatility.",
+    description:
+      "Maintain portfolio delta within acceptable parameters during high volatility.",
     current: 1,
     total: 3,
     icon: "flight_takeoff" as const,
@@ -36,9 +37,16 @@ export function ProgressDrills() {
               {drill.current}/{drill.total}
             </strong>
           </div>
-          <div aria-label={`${drill.current} of ${drill.total} complete`} className="segmented-progress" role="img">
+          <div
+            aria-label={`${drill.current} of ${drill.total} complete`}
+            className="segmented-progress"
+            role="img"
+          >
             {Array.from({ length: drill.total }, (_, index) => (
-              <span className={index < drill.current ? "is-complete" : ""} key={index} />
+              <span
+                className={index < drill.current ? "is-complete" : ""}
+                key={index}
+              />
             ))}
           </div>
         </article>

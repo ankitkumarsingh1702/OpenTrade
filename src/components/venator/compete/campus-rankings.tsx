@@ -10,8 +10,13 @@ export function CampusRankings() {
       </div>
       <ol className="rankings__list">
         {rankings.map((ranking, index) => (
-          <li className={`ranking-row clip-notch-tr${index < 2 ? " ranking-row--top" : ""}`} key={ranking.rank}>
-            {ranking.score ? <i aria-hidden="true" style={{ width: `${ranking.score}%` }} /> : null}
+          <li
+            className={`ranking-row clip-notch-tr${index < 2 ? " ranking-row--top" : ""}`}
+            key={ranking.rank}
+          >
+            {ranking.score ? (
+              <i aria-hidden="true" style={{ width: `${ranking.score}%` }} />
+            ) : null}
             <span className="ranking-row__name">
               <strong>{ranking.rank}</strong>
               {ranking.name}

@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 
 import { parsePreferences, PREFERENCES_KEY } from "@/lib/preferences";
 
-const INTERACTIVE_SELECTOR = "a[href], button:not([disabled]), [role='button']:not([aria-disabled='true'])";
+const INTERACTIVE_SELECTOR =
+  "a[href], button:not([disabled]), [role='button']:not([aria-disabled='true'])";
 const MAX_BURSTS = 8;
 
 export function InteractionEffects() {
@@ -15,7 +16,10 @@ export function InteractionEffects() {
 
     const playSound = (kind: string) => {
       try {
-        if (!parsePreferences(window.localStorage.getItem(PREFERENCES_KEY)).soundEffects) {
+        if (
+          !parsePreferences(window.localStorage.getItem(PREFERENCES_KEY))
+            .soundEffects
+        ) {
           return false;
         }
 
@@ -47,7 +51,10 @@ export function InteractionEffects() {
 
     const createBurst = (event: MouseEvent, target: Element) => {
       const layer = layerRef.current;
-      if (!layer || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (
+        !layer ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
         return;
       }
 
@@ -56,16 +63,23 @@ export function InteractionEffects() {
       }
 
       const bounds = target.getBoundingClientRect();
-      const useTargetCenter = event.detail === 0 || (event.clientX === 0 && event.clientY === 0);
-      const x = useTargetCenter ? bounds.left + bounds.width / 2 : event.clientX;
-      const y = useTargetCenter ? bounds.top + bounds.height / 2 : event.clientY;
+      const useTargetCenter =
+        event.detail === 0 || (event.clientX === 0 && event.clientY === 0);
+      const x = useTargetCenter
+        ? bounds.left + bounds.width / 2
+        : event.clientX;
+      const y = useTargetCenter
+        ? bounds.top + bounds.height / 2
+        : event.clientY;
       const burst = document.createElement("span");
       burst.className = "tactical-click-burst";
       burst.style.left = `${x}px`;
       burst.style.top = `${y}px`;
       burst.setAttribute("aria-hidden", "true");
       layer.appendChild(burst);
-      burst.addEventListener("animationend", () => burst.remove(), { once: true });
+      burst.addEventListener("animationend", () => burst.remove(), {
+        once: true,
+      });
       window.setTimeout(() => burst.remove(), 520);
     };
 
@@ -75,7 +89,11 @@ export function InteractionEffects() {
       }
 
       const target = event.target.closest(INTERACTIVE_SELECTOR);
-      if (!target || target.hasAttribute("disabled") || target.getAttribute("aria-disabled") === "true") {
+      if (
+        !target ||
+        target.hasAttribute("disabled") ||
+        target.getAttribute("aria-disabled") === "true"
+      ) {
         return;
       }
 
@@ -83,7 +101,9 @@ export function InteractionEffects() {
       const soundPlayed = playSound(kind);
       createBurst(event, target);
       window.dispatchEvent(
-        new CustomEvent("opentrade:arena-feedback", { detail: { kind, soundPlayed } }),
+        new CustomEvent("opentrade:arena-feedback", {
+          detail: { kind, soundPlayed },
+        }),
       );
     };
 
@@ -97,5 +117,7 @@ export function InteractionEffects() {
     };
   }, []);
 
-  return <div aria-hidden="true" className="tactical-effects-layer" ref={layerRef} />;
+  return (
+    <div aria-hidden="true" className="tactical-effects-layer" ref={layerRef} />
+  );
 }

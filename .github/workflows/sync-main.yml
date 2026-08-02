@@ -1,0 +1,45 @@
+name: Sync verified dev to main
+
+on:
+  workflow_run:
+    workflows: [Deploy dev]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  propose:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record verified release status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$VERIFIED_SHA" \
+            -f state=success \
+            -f context='Release verification' \
+            -f description='Candidate and stable Cloud Run smoke passed' \
+            -f target_url="${{ github.event.workflow_run.html_url }}"
+      - name: Create or update dev to main pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$(gh api "repos/$GITHUB_REPOSITORY/compare/main...dev" --jq '.ahead_by')" == "0" ]]; then
+            echo "main already contains dev"
+            exit 0
+          fi
+          pr_url="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head dev --state open --json url --jq '.[0].url // ""')"
+          if [[ -z "$pr_url" ]]; then
+            pr_url="$(gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base main \
+              --head dev \
+              --title 'release: sync verified dev to main' \
+              --body 'Automated promotion after candidate E2E, stable-route smoke, and exact Cloud Run revision promotion passed.')"
+          fi
+          gh pr merge "$pr_url" --auto --merge

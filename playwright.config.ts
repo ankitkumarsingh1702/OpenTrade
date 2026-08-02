@@ -6,16 +6,19 @@ export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
   retries: 0,
-  reporter: [["list"]],
+  reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: externalBaseUrl ?? "http://127.0.0.1:3000",
     trace: "retain-on-failure",
-    screenshot: "only-on-failure",
+    screenshot: "on",
   },
   projects: [
     {
       name: "desktop",
-      use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 1024 } },
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 1024 },
+      },
     },
     {
       name: "mobile",
