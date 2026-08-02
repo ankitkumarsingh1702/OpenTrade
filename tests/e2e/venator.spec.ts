@@ -176,6 +176,71 @@ test("brand palette renders Outer Space with contrast-safe Perfect White control
   });
 });
 
+test("official OpenTrade identity blends into the black shell and owns favicon metadata", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+
+  const logo = page.getByRole("img", { name: "OpenTrade", exact: true });
+  const brand = logo.locator("..");
+  await expect(logo).toBeVisible();
+  await expect(logo).toHaveAttribute("src", "/favicon.svg");
+
+  const identity = await logo.evaluate((element) => {
+    const image = element as HTMLImageElement;
+    const brandStyle = getComputedStyle(image.closest<HTMLElement>(".brand")!);
+    const imageStyle = getComputedStyle(image);
+    const rail = document.querySelector<HTMLElement>(".primary-sidebar");
+    const bounds = image.getBoundingClientRect();
+
+    return {
+      backgroundImage: brandStyle.backgroundImage,
+      brandBackground: brandStyle.backgroundColor,
+      filter: imageStyle.filter,
+      naturalHeight: image.naturalHeight,
+      naturalWidth: image.naturalWidth,
+      renderedHeight: bounds.height,
+      renderedWidth: bounds.width,
+      railBackground: rail ? getComputedStyle(rail).backgroundColor : null,
+    };
+  });
+
+  expect(identity).toMatchObject({
+    backgroundImage: "none",
+    brandBackground: "rgb(0, 0, 0)",
+    filter: "invert(1)",
+  });
+  expect(identity.naturalWidth).toBeGreaterThan(0);
+  expect(identity.naturalHeight).toBe(identity.naturalWidth);
+  if (testInfo.project.name === "mobile") {
+    expect(identity.renderedWidth).toBe(44);
+  } else {
+    expect(identity.renderedWidth).toBeGreaterThanOrEqual(200);
+    expect(identity.renderedWidth).toBeLessThanOrEqual(208);
+  }
+  expect(identity.renderedHeight).toBe(identity.renderedWidth);
+  if (identity.railBackground) {
+    expect(identity.railBackground).toBe("rgb(0, 0, 0)");
+  }
+
+  const favicon = await page.request.get("/favicon.svg");
+  expect(favicon.ok()).toBe(true);
+  expect(favicon.headers()["content-type"]).toMatch(/^image\/svg\+xml/);
+  expect(await favicon.text()).toContain('aria-label="OpenTrade dog logo"');
+  await expect(page.locator('link[rel~="icon"]')).toHaveAttribute(
+    "href",
+    "/favicon.svg",
+  );
+
+  await expect(brand).not.toHaveCSS("background-image", /url/);
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  );
+  expect(overflow).toBe(0);
+});
+
 test("desktop pages have no serious accessibility violations", async ({
   page,
 }, testInfo) => {

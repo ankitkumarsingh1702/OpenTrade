@@ -19,12 +19,14 @@ export function LinklessBrand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "brand brand--compact" : "brand"}>
       <Image
-        alt="OpenTrade Tactical Logo"
-        height={512}
+        alt="OpenTrade"
+        className="brand__mark"
+        height={1024}
         priority
-        sizes={compact ? "44px" : "256px"}
-        src="/assets/opentrade-tactical-logo.jpg"
-        width={512}
+        sizes={compact ? "44px" : "208px"}
+        src="/favicon.svg"
+        unoptimized
+        width={1024}
       />
     </div>
   );

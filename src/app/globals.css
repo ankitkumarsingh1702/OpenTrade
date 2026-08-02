@@ -184,20 +184,25 @@ h4 {
 .primary-sidebar {
   left: 0;
   width: var(--left-rail);
-  background: var(--surface-lowest);
+  background: #000;
   border-right: 2px solid var(--border);
 }
 
 .brand {
+  display: grid;
   flex: 0 0 auto;
+  place-items: center;
   padding: 24px 24px 8px;
+  background: #000;
   border-bottom: 2px solid var(--border);
 }
 
-.brand img {
+.brand__mark {
   display: block;
   width: 100%;
+  max-width: 208px;
   height: auto;
+  filter: invert(1);
 }
 
 .primary-nav {
@@ -2110,7 +2115,7 @@ h4 {
     align-items: center;
     justify-content: space-between;
     padding: 8px 16px;
-    background: var(--surface-lowest);
+    background: #000;
     border-bottom: 2px solid var(--border);
   }
 
@@ -2127,7 +2132,8 @@ h4 {
 
   .brand--compact {
     width: 48px;
-    padding: 0;
+    height: 48px;
+    padding: 2px;
     border: 0;
   }
 
