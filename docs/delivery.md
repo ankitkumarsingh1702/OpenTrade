@@ -24,7 +24,7 @@ The deployment workflow:
 6. checks the stable service URL.
 7. restores the previous revision if the post-promotion check fails.
 
-After the stable check passes, an automated pull request syncs `dev` to `main`. The required `Release verification` status is attached to the exact `dev` SHA and links to its successful deployment run.
+After the stable check passes, automation creates a temporary release branch from current `main`, merges the verified `dev` SHA into it, and opens the protected release pull request. This keeps the release head strictly up to date without merging release-only history back into `dev`. The required `Release verification` status is attached to the exact release-head SHA and links to its successful deployment run.
 
 ## Recovery
 
