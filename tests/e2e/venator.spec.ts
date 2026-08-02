@@ -14,6 +14,7 @@ test("dashboard enters the complete Arena flow", async ({ page }) => {
   await expect(page.getByText("Progression")).toHaveCount(2);
   await expect(page.locator(".home-play-card")).toHaveCount(2);
 
+  await page.waitForLoadState("networkidle");
   await page.getByRole("link", { name: /enter arena/i }).click();
   await expect(page).toHaveURL(/\/arena$/);
   await expect(
@@ -323,6 +324,31 @@ test("navigation, competition validation, and profile preferences work", async (
     );
   }
   await expect(page.getByRole("listitem")).toHaveCount(9);
+  await expect(page.getByText("1 to 7 Aug 2026")).toBeVisible();
+  await expect(page.getByText("Virtual, Australia")).toBeVisible();
+  await expect(page.getByText("Teams of 1 to 4")).toBeVisible();
+
+  const eventSignup = page.getByRole("button", { name: "Event Signup" });
+  await eventSignup.click();
+  const signupDialog = page.getByRole("dialog", { name: "Event Signup" });
+  await expect(signupDialog).toContainText(
+    "Event registration is not connected in this local interface preview.",
+  );
+  await signupDialog.getByRole("button", { name: "Close" }).click();
+  await expect(eventSignup).toBeFocused();
+
+  const enterCompetition = page.getByRole("button", {
+    name: "Enter Competition",
+  });
+  await enterCompetition.click();
+  const competitionDialog = page.getByRole("dialog", {
+    name: "Enter Competition",
+  });
+  await expect(competitionDialog).toContainText(
+    "Competition gameplay is not connected in this local interface preview.",
+  );
+  await competitionDialog.getByRole("button", { name: "Close" }).click();
+  await expect(enterCompetition).toBeFocused();
 
   const email = page.getByLabel("Student email");
   await email.fill("not-an-email");
@@ -330,6 +356,8 @@ test("navigation, competition validation, and profile preferences work", async (
   await expect(
     page.getByText("Enter a valid student email address."),
   ).toBeVisible();
+  await expect(email).toBeFocused();
+  await expect(email).toHaveAttribute("aria-invalid", "true");
 
   await email.fill("student@iitm.ac.in");
   await page.getByRole("button", { name: "Update" }).click();
@@ -355,6 +383,256 @@ test("navigation, competition validation, and profile preferences work", async (
   await expect(
     page.getByRole("switch", { name: "Use dark appearance" }),
   ).not.toBeChecked();
+
+  const soundEffects = page.getByRole("switch", {
+    name: "Arena sound effects",
+  });
+  const emailReminders = page.getByRole("switch", {
+    name: "Email reminders",
+  });
+  const textReminders = page.getByRole("switch", {
+    name: "Text reminders require verification",
+  });
+  await expect(soundEffects).toBeChecked();
+  await expect(emailReminders).toBeChecked();
+  await expect(textReminders).toBeDisabled();
+  await soundEffects.uncheck();
+  await emailReminders.uncheck();
+  await page.reload();
+  await expect(
+    page.getByRole("switch", { name: "Arena sound effects" }),
+  ).not.toBeChecked();
+  await expect(
+    page.getByRole("switch", { name: "Email reminders" }),
+  ).not.toBeChecked();
+
+  await expect(page.getByRole("article")).toHaveCount(4);
+  await expect(page.getByText("Freezes")).toBeVisible();
+  await expect(page.getByText("Unlocks at Level 40")).toBeVisible();
+
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("button", { name: "Open navigation" }).click();
+    await expect(page.getByRole("link", { name: "Settings" })).toHaveAttribute(
+      "href",
+      "/profile#appearance",
+    );
+    await page.getByRole("button", { name: "Close navigation" }).click();
+  } else {
+    await expect(page.getByRole("link", { name: "Settings" })).toHaveAttribute(
+      "href",
+      "/profile#appearance",
+    );
+  }
+
+  const gear = page.getByRole("button", { name: "View OpenTrade gear" });
+  await gear.click();
+  const gearDialog = page.getByRole("dialog", {
+    name: "View OpenTrade gear",
+  });
+  await expect(gearDialog).toContainText(
+    "The OpenTrade gear store is not connected in this local interface preview.",
+  );
+  await gearDialog.getByRole("button", { name: "Close" }).click();
+
+  const signOut = page.getByRole("button", { name: "Sign out" });
+  await signOut.click();
+  const signOutDialog = page.getByRole("dialog", { name: "Sign out" });
+  await expect(signOutDialog).toContainText(
+    "Authentication is not connected in this local interface preview, so no session was changed.",
+  );
+  await signOutDialog.getByRole("button", { name: "Close" }).click();
+});
+
+test("Compete and Profile use restrained responsive geometry", async ({
+  page,
+}, testInfo) => {
+  const isMobile = testInfo.project.name === "mobile";
+  await page.setViewportSize(
+    isMobile ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+  );
+
+  await page.goto("/compete");
+  const competeMetrics = await page.evaluate(() => {
+    const inspect = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector)!;
+      const bounds = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        backgroundImage: style.backgroundImage,
+        borderBottom: style.borderBottomWidth,
+        borderLeft: style.borderLeftWidth,
+        borderRight: style.borderRightWidth,
+        borderTop: style.borderTopWidth,
+        boxShadow: style.boxShadow,
+        height: bounds.height,
+        left: bounds.left,
+        right: bounds.right,
+        top: bounds.top,
+      };
+    };
+    const rankingRows = [
+      ...document.querySelectorAll<HTMLElement>(".ranking-row"),
+    ];
+
+    return {
+      brief: inspect(".competition-brief"),
+      campus: inspect(".campus-panel"),
+      controls: [
+        ...document.querySelectorAll<HTMLElement>(
+          ".page--compete button, .page--compete input",
+        ),
+      ]
+        .filter((control) => control.getClientRects().length > 0)
+        .map((control) => control.getBoundingClientRect().height),
+      firstFourRankingBottom: rankingRows[3]?.getBoundingClientRect().bottom,
+      interestBackground: getComputedStyle(
+        document.querySelector<HTMLElement>(
+          ".ranking-row--top .ranking-row__interest",
+        )!,
+      ).backgroundColor,
+      overflow:
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+      rankingHeights: rankingRows.map(
+        (row) => row.getBoundingClientRect().height,
+      ),
+    };
+  });
+
+  expect(competeMetrics.overflow).toBeLessThanOrEqual(0);
+  expect(competeMetrics.brief.height).toBeLessThanOrEqual(isMobile ? 540 : 340);
+  expect(competeMetrics.brief.borderTop).toBe("1px");
+  expect(competeMetrics.brief.boxShadow).toBe("none");
+  expect(competeMetrics.brief.backgroundImage).toBe("none");
+  expect(competeMetrics.campus.borderTop).toBe("1px");
+  expect(competeMetrics.campus.boxShadow).toBe("none");
+  expect(competeMetrics.interestBackground).toBe("rgba(0, 0, 0, 0)");
+  expect(competeMetrics.controls.every((height) => height >= 44)).toBe(true);
+  if (!isMobile) {
+    expect(
+      Math.max(...competeMetrics.rankingHeights) -
+        Math.min(...competeMetrics.rankingHeights),
+    ).toBeLessThanOrEqual(1);
+  }
+
+  await page.goto("/profile");
+  const profileMetrics = await page.evaluate(() => {
+    const panels = [
+      ...document.querySelectorAll<HTMLElement>(
+        ".page--profile .hud-panel, .page--profile .milestone-card",
+      ),
+    ];
+    const panelStyles = panels.map((panel) => {
+      const style = getComputedStyle(panel);
+      return {
+        backgroundImage: style.backgroundImage,
+        borderTop: style.borderTopWidth,
+        boxShadow: style.boxShadow,
+      };
+    });
+    const profileBefore = getComputedStyle(
+      document.querySelector<HTMLElement>(".page--profile")!,
+      "::before",
+    );
+
+    return {
+      beforeContent: profileBefore.content,
+      documentHeight: document.documentElement.scrollHeight,
+      milestoneColumns: getComputedStyle(
+        document.querySelector<HTMLElement>(".milestone-grid")!,
+      ).gridTemplateColumns,
+      overflow:
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+      panelStyles,
+      targets: [
+        ...document.querySelectorAll<HTMLElement>(
+          ".page--profile button, .page--profile .tactical-toggle",
+        ),
+      ]
+        .filter((target) => target.getClientRects().length > 0)
+        .map((target) => target.getBoundingClientRect().height),
+    };
+  });
+
+  expect(profileMetrics.overflow).toBeLessThanOrEqual(0);
+  expect(profileMetrics.beforeContent).toBe("none");
+  expect(
+    profileMetrics.panelStyles.every(
+      (style) =>
+        style.backgroundImage === "none" &&
+        style.borderTop === "1px" &&
+        style.boxShadow === "none",
+    ),
+  ).toBe(true);
+  expect(profileMetrics.targets.every((height) => height >= 44)).toBe(true);
+  if (isMobile) {
+    expect(profileMetrics.documentHeight).toBeLessThan(1900);
+    expect(profileMetrics.milestoneColumns.split(" ")).toHaveLength(2);
+  }
+
+  const accessibility = await new AxeBuilder({ page }).analyze();
+  expect(accessibility.violations).toEqual([]);
+
+  if (isMobile) {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/compete");
+    const competeFallback = await page.evaluate(() => ({
+      bounds: [
+        ...document.querySelectorAll<HTMLElement>(
+          ".page--compete .competition-brief, .page--compete .campus-panel, .page--compete .ranking-row",
+        ),
+      ].map((element) => ({
+        left: element.getBoundingClientRect().left,
+        right: element.getBoundingClientRect().right,
+      })),
+      overflow:
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+      titleHeight: document
+        .querySelector<HTMLElement>(".page--compete .page-title h1")!
+        .getBoundingClientRect().height,
+    }));
+    expect(competeFallback.overflow).toBeLessThanOrEqual(0);
+    expect(
+      competeFallback.bounds.every(
+        ({ left, right }) => left >= 16 && right <= 304,
+      ),
+    ).toBe(true);
+    expect(competeFallback.titleHeight).toBeLessThanOrEqual(40);
+
+    await page.goto("/profile");
+    const profileFallback = await page.evaluate(() => ({
+      milestoneColumns: getComputedStyle(
+        document.querySelector<HTMLElement>(".milestone-grid")!,
+      ).gridTemplateColumns,
+      overflow:
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+      panels: [
+        ...document.querySelectorAll<HTMLElement>(
+          ".page--profile .hud-panel, .page--profile .milestone-card",
+        ),
+      ].map((element) => ({
+        left: element.getBoundingClientRect().left,
+        right: element.getBoundingClientRect().right,
+      })),
+    }));
+    expect(profileFallback.overflow).toBeLessThanOrEqual(0);
+    expect(profileFallback.milestoneColumns.split(" ")).toHaveLength(2);
+    expect(
+      profileFallback.panels.every(
+        ({ left, right }) => left >= 16 && right <= 304,
+      ),
+    ).toBe(true);
+  } else {
+    await page.setViewportSize({ width: 1280, height: 1024 });
+    await page.goto("/compete");
+    const fourthRanking = page.getByRole("listitem").nth(3);
+    await expect(fourthRanking).toBeInViewport();
+    await page.goto("/profile");
+    await expect(page.getByText("Freezes")).toBeInViewport();
+  }
 });
 
 test("brand palette renders Outer Space with contrast-safe Perfect White controls", async ({
