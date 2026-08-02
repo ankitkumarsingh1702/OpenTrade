@@ -15,6 +15,8 @@ export function HomeStreakNudge() {
     return {
       complete: day <= streak.completedNodes,
       day,
+      latestComplete:
+        day === streak.completedNodes && streak.completedNodes > 0,
       next: day === streak.completedNodes + 1,
     };
   });
@@ -22,13 +24,11 @@ export function HomeStreakNudge() {
   return (
     <section aria-label="Daily streak" className="streak-nudge clip-notch-br">
       <div className="streak-nudge__summary">
-        <span aria-hidden="true" className="streak-nudge__fire clip-notch-tl">
+        <span aria-hidden="true" className="streak-nudge__fire">
           <MaterialIcon filled name="local_fire_department" />
         </span>
-        <div>
-          <h2>{streak.title}</h2>
-          <p>{streak.description}</p>
-        </div>
+        <h2>{streak.title}</h2>
+        <p className="sr-only">{streak.description}</p>
       </div>
 
       <div
@@ -39,31 +39,39 @@ export function HomeStreakNudge() {
         className="streak-nudge__progress"
         role="progressbar"
       >
+        <span aria-hidden="true" className="streak-nudge__progress-label">
+          {streak.currentDays} / {streak.targetDays}
+        </span>
         <ol aria-hidden="true" className="streak-nudge__days">
-          {days.map(({ complete, day, next }) => (
+          {days.map(({ complete, day, latestComplete, next }) => (
             <li
               className={`streak-nudge__day${
                 complete ? " streak-nudge__day--complete" : ""
-              }${next ? " streak-nudge__day--next" : ""}`}
+              }${latestComplete ? " streak-nudge__day--latest" : ""}${
+                next ? " streak-nudge__day--next" : ""
+              }`}
               key={day}
             >
-              <span>{complete ? <MaterialIcon name="check" /> : day}</span>
+              <span>
+                {latestComplete ? <MaterialIcon name="check" /> : day}
+              </span>
             </li>
           ))}
         </ol>
       </div>
 
-      <div className="streak-nudge__action">
-        <span>{streak.milestone}</span>
-        <a
-          className="tactical-button tactical-button--primary streak-nudge__cta"
-          data-tactical-sound="launch"
-          href="#daily-drills"
-        >
-          Choose a Daily Drill
-          <MaterialIcon name="arrow_forward" />
-        </a>
-      </div>
+      <a
+        aria-label={`Play today. ${streak.milestone}.`}
+        className="tactical-button tactical-button--primary streak-nudge__cta"
+        data-tactical-sound="launch"
+        href="#daily-drills"
+      >
+        <span className="streak-nudge__cta-copy">
+          <strong>Play today</strong>
+          <small>{streak.milestone}</small>
+        </span>
+        <MaterialIcon name="arrow_forward" />
+      </a>
     </section>
   );
 }
